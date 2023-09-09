@@ -18,6 +18,7 @@ export const storeItem = create(
             userToken: null,
             refreshToken: null,
             menuActive: '1',
+            toastMessage: null,
 
             increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
             fillUserId: (val) => set({ userId: val }),
@@ -26,6 +27,7 @@ export const storeItem = create(
             fillUserToken: (val) => set({ userToken: val }),
             fillRefreshToken: (val) => set({ refreshToken: val }),
             fillMenuActive: (val) => set({ menuActive: val }),
+            fillToastMessage: (val) => set({ toastMessage: val }),
 
             removeUserId: () => set({ userId: null }),
             removeFullname: () => set({ fullname: null }),

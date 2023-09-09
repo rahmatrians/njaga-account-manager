@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Button, Card, Col, Row, Space, Switch, Typography } from "antd";
-import { WalletTwoTone, RightOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Row, Switch, Typography } from "antd";
+import { RightOutlined } from '@ant-design/icons';
 const { Title } = Typography;
-const { Meta } = Card;
 import { Link } from "react-router-dom";
 import { storeItem } from '../../utils/storeItem';
 
@@ -41,14 +40,13 @@ export default function Dashboard() {
                                 }}
                                 loading={loading}
                             >
-                                {/* <WalletTwoTone style={{ fontSize: 40 }} twoToneColor="#eb2f96" /> */}
-                                <Title level={1}>🚀</Title>
-
                                 <Row justify='space-between' align='middle'>
-                                    <Meta
-                                        title={<Title level={2}>98</Title>}
-                                        description={"This is the description"}
-                                    />
+                                    <Title level={1}>🚀</Title>
+                                    <Title level={2} style={{ color: 'grey', fontWeight: 'bold', margin: 0, padding: 0 }}>89</Title>
+                                </Row>
+
+                                <Row justify='space-between' align='middle' style={{ marginTop: 10 }}>
+                                    <Title level={4} style={{ margin: 0, padding: 0 }}>Social Media</Title>
                                     <Button type="text" shape="circle" icon={<RightOutlined />} style={{ color: 'lightGrey' }} size={32} />
                                 </Row>
                             </Card>
@@ -68,14 +66,14 @@ export default function Dashboard() {
                             }}
                             loading={loading}
                         >
-                            {/* <WalletTwoTone style={{ fontSize: 40 }} twoToneColor="#eb2f96" /> */}
-                            <Title level={1}>👉🏻</Title>
 
                             <Row justify='space-between' align='middle'>
-                                <Meta
-                                    title={<Title level={2} style={{ marginBottom: 0, padding: 0 }}>Others</Title>}
-                                    description={"See more categories"}
-                                />
+                                <Title level={1}>👉🏻</Title>
+                                {/* <Title level={2} style={{ color: 'grey', fontWeight: 'bold', margin: 0, padding: 0 }}>89</Title> */}
+                            </Row>
+
+                            <Row justify='space-between' align='middle' style={{ marginTop: 10 }}>
+                                <Title level={4} style={{ margin: 0, padding: 0 }}>Others</Title>
                                 <Button type="text" shape="circle" icon={<RightOutlined />} style={{ color: 'lightGrey' }} size={32} />
                             </Row>
                         </Card>

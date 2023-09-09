@@ -3,13 +3,21 @@ import {
     Navigate,
 } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
+
 import Dashboard from "../pages/Dashboard";
+
 import Category from "../pages/Category";
+
+import CategoryAdd from "../pages/Category/add";
+
 import Platform from "../pages/Platform";
+import PlatformAdd from "../pages/Platform/add";
+
 import Setting from "../pages/Setting";
+
 import Login from "../pages/Authentication/login";
+
 import NotFound404 from "../pages/NotFound404";
-import Add from "../pages/Category/add";
 
 export const Router = createBrowserRouter([
     {
@@ -39,6 +47,14 @@ export const Router = createBrowserRouter([
         // errorElement: 
     },
     {
+        path: "category/add",
+        element: <PrivateRoute breadcumb={[
+            { path: 'category', title: 'Category' },
+            { path: 'add', title: 'Add' },
+        ]}><CategoryAdd /></PrivateRoute>,
+        // errorElement: 
+    },
+    {
         path: "platform",
         element: <PrivateRoute breadcumb={[
             { path: 'platform', title: 'Platform' },
@@ -47,14 +63,13 @@ export const Router = createBrowserRouter([
         // errorElement: 
     },
     {
-        path: "partners/add",
+        path: "platform/add",
         element: <PrivateRoute breadcumb={[
-            { path: 'partners', title: 'Partners' },
+            { path: 'platform', title: 'Platform' },
             { path: 'add', title: 'Add' },
-        ]}><Add /></PrivateRoute>,
+        ]}><PlatformAdd /></PrivateRoute>,
         // errorElement: 
     },
-
     {
         path: "setting",
         element: <PrivateRoute breadcumb={[

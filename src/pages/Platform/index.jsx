@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { Avatar, Button, Card, Col, Row, Space, Switch, Typography } from "antd";
-import { RightOutlined } from '@ant-design/icons';
+import { Avatar, Button, Card, Col, FloatButton, Row, Switch, Typography } from "antd";
+import { UserAddOutlined, RightOutlined } from '@ant-design/icons';
 const { Title } = Typography;
-const { Meta } = Card;
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { storeItem } from '../../utils/storeItem';
 
 
 export default function Platform() {
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
     const fillMenuActive = storeItem((state) => state.fillMenuActive);
 
     const onChange = (checked) => {
@@ -23,20 +23,33 @@ export default function Platform() {
                 borderRadius: 16,
             }}
         >
+
             <Switch checked={!loading} onChange={onChange} />
+            <FloatButton
+                onClick={() => navigate('/platform/add')}
+                shape="circle"
+                type="primary"
+                style={{
+                    right: 32,
+                    bottom: 32,
+                    width: 60,
+                    height: 60,
+                }}
+                icon={<UserAddOutlined style={{ width: 60, height: 60 }} />}
+            />
             <Row gutter={32}>
 
-                {([8, 8, 8, 8, 8, 8, 8, 8]).map((idx) => (
+                {([8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]).map((idx) => (
 
                     <Col flex={'auto'} key={idx}>
                         <Link to={`/platform/${idx}`}>
                             <Card
                                 style={{
                                     minWidth: 200,
-                                    // height: 120,
                                     borderRadius: 16,
                                     borderWidth: 0,
-                                    marginBottom: 30
+                                    marginBottom: 30,
+                                    background: '#181818'
                                 }}
                                 loading={loading}
                             >
@@ -56,8 +69,8 @@ export default function Platform() {
                                             Fa
                                         </Avatar>
                                         <div>
-                                            <Title level={4} style={{ margin: 0, padding: 0 }}>Facebook</Title>
-                                            <p style={{ margin: 0, padding: 0 }}>rxhmxtrxxns@proton.com</p>
+                                            <Title level={4} style={{ color: '#f56a00', margin: 0, padding: 0 }}>Facebook</Title>
+                                            <p style={{ color: 'grey', margin: 0, padding: 0 }}>{("rxhmxtrxxns@proton.com").length > 20 ? ("rxhmxtrxxns@proton.com").slice(0, 17) + '...' : "rxhmxtrxxns@proton.com"}</p>
                                         </div>
                                     </Row>
 
@@ -69,6 +82,6 @@ export default function Platform() {
                 ))}
 
             </Row>
-        </div>
+        </div >
     );
 }

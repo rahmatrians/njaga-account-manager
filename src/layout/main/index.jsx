@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import '../../App.css'
 
-import { Avatar, Badge, Button, ConfigProvider, Row, Space, theme } from 'antd';
-import { LockOutlined, AppstoreOutlined, SettingOutlined, PieChartOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Button, ConfigProvider, Row, Space, theme, message } from 'antd';
+import { LockOutlined, AppstoreOutlined, SettingOutlined, PieChartOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu } from 'antd';
 import { Link } from 'react-router-dom';
 import { storeItem } from '../../utils/storeItem';
@@ -53,8 +53,10 @@ const items = [
 
 
 function Main({ children, breadcumb }) {
-    const { menuActive } = storeItem();
+    const { menuActive, toastMessage } = storeItem();
     const fillMenuActive = storeItem((state) => state.fillMenuActive);
+    const fillToastMessage = storeItem((state) => state.fillToastMessage);
+    const [messageApi, contextHolder] = message.useMessage();
 
     const { defaultAlgorithm, darkAlgorithm } = theme;
     const [isDarkMode, setIsDarkMode] = useState(true);
@@ -65,10 +67,22 @@ function Main({ children, breadcumb }) {
 
     const { token: { colorBgContainer } } = theme.useToken();
 
-    // console.log('warna : ', colorBgContainer);
     const handleClick = () => {
         setIsDarkMode((previousValue) => !previousValue);
     };
+
+    const showMessage = (type, message) => {
+        messageApi.open({
+            type: type,
+            content: message,
+            className: 'custom-class',
+            style: {
+                marginTop: '5vh',
+            },
+        });
+    };
+
+
 
     return (
         <div style={{
@@ -87,22 +101,20 @@ function Main({ children, breadcumb }) {
                 }}
             >
 
-                {/* <Card style={{ width: "max-content" }}>
-          <Button onClick={handleClick} type='primary'>
-            {isDarkMode ? "Light" : "Dark"}
-          </Button>
-        </Card> */}
-
                 <Layout
                     style={{
                         minHeight: '100vh',
                         background: 'black',
                     }}
                 >
+
+                    {!!toastMessage && (showMessage(toastMessage[0], toastMessage[1]), fillToastMessage(null))}
+                    {contextHolder}
+
                     <Sider collapsed={collapsed} style={{ background: 'black', maxHeight: '100vh' }}>
                         <div className="demo-logo-vertical" />
                         <h1>nJaga</h1>
-                        <Menu onClick={selected => fillMenuActive(selected.key)} selectedKeys={menuActive} mode="inline" items={items} style={{ background: 'black', borderWidth: 1, borderColor: '#1f1f1f', minHeight: '100vh' }} />
+                        <Menu onClick={selected => fillMenuActive(selected.key)} selectedKeys={menuActive} mode="inline" items={items} style={{ background: 'black', borderWidth: 1, borderColor: '#1f1f1f', minHeight: '100vh', paddingLeft: 10, paddingRight: 10 }} />
                         {!collapsed && (
                             <Link to={'https://www.github.com/rahmatrians'} target="_blank" rel='noopener noreferrer'>
                                 <p style={{ position: 'absolute', left: 30, bottom: 20, color: 'grey', fontSize: 12 }}>Developed by <br /> Rahmat Riansyah</p>

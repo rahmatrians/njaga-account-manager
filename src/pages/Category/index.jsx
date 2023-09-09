@@ -1,19 +1,48 @@
-import { useState } from "react";
-import { Button, Card, Col, Row, Switch, Typography } from "antd";
-import { RightOutlined } from '@ant-design/icons';
+import { useEffect, useState } from "react";
+import { Button, Card, Col, FloatButton, Row, Typography } from "antd";
+import { AppstoreAddOutlined, RightOutlined } from '@ant-design/icons';
 const { Title } = Typography;
-const { Meta } = Card;
-import { Link } from "react-router-dom";
-import { storeItem } from '../../utils/storeItem';
+import { Link, useNavigate } from "react-router-dom";
+
+import { firestore } from "../../config/firebase";
+import { collection, getDocs, query, where, onSnapshot } from "firebase/firestore";
 
 
 export default function Category() {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const fillMenuActive = storeItem((state) => state.fillMenuActive);
+    const [categories, setCategories] = useState([]);
 
-    const onChange = (checked) => {
-        setLoading(!checked);
-    };
+    useEffect(() => {
+        getCategories();
+    }, [])
+
+
+    const getCategories = async () => {
+        setLoading(true);
+        // realtime query
+        const q = query(collection(firestore, "categories"));
+        onSnapshot(q, (querySnapshot) => {
+            let tempCategories = [];
+            querySnapshot.forEach((doc) => {
+                tempCategories.push(doc.data());
+            });
+
+            setCategories(tempCategories);
+            setTimeout(() => setLoading(false), 500);
+        });
+
+        // non-realtime query
+        // const categoriesQuery = await getDocs(collection(firestore, "categories"))
+        // let tempCategories = [];
+        // categoriesQuery.forEach(doc => {
+        //     // doc.data() is never undefined for query doc snapshots
+        //     tempCategories.push(doc.data());
+        // });
+
+        // setCategories(tempCategories);
+    }
+
 
     return (
         <div
@@ -23,31 +52,43 @@ export default function Category() {
                 borderRadius: 16,
             }}
         >
-            <Switch checked={!loading} onChange={onChange} />
+
+            <FloatButton
+                onClick={() => navigate('/category/add')}
+                shape="circle"
+                type="primary"
+                style={{
+                    right: 32,
+                    bottom: 32,
+                    width: 60,
+                    height: 60,
+                }}
+                icon={<AppstoreAddOutlined style={{ width: 60, height: 60 }} />}
+            />
+
             <Row gutter={32}>
 
-                {([8, 8, 8, 8, 8, 8, 8, 8, 8]).map(() => (
+                {!!categories && categories.map((val) => (
 
-                    <Col flex="auto">
+                    <Col flex="auto" key={val.title}>
                         <Link to={'record/id'}>
                             <Card
                                 style={{
                                     minWidth: 320,
-                                    height: 180,
                                     borderRadius: 16,
                                     borderWidth: 0,
-                                    marginBottom: 30
+                                    marginBottom: 30,
+                                    background: '#181818'
                                 }}
                                 loading={loading}
                             >
-                                {/* <WalletTwoTone style={{ fontSize: 40 }} twoToneColor="#eb2f96" /> */}
-                                <Title level={1}>🚀</Title>
-
                                 <Row justify='space-between' align='middle'>
-                                    <Meta
-                                        title={<Title level={2}>98</Title>}
-                                        description={"This is the description"}
-                                    />
+                                    <Title level={1}>🚀</Title>
+                                    <Title level={2} style={{ color: 'grey', fontWeight: 'bold', margin: 0, padding: 0 }}>89</Title>
+                                </Row>
+
+                                <Row justify='space-between' align='middle' style={{ marginTop: 10 }}>
+                                    <Title level={4} style={{ margin: 0, padding: 0 }}>{val.title}</Title>
                                     <Button type="text" shape="circle" icon={<RightOutlined />} style={{ color: 'lightGrey' }} size={32} />
                                 </Row>
                             </Card>
@@ -56,6 +97,6 @@ export default function Category() {
                 ))}
 
             </Row>
-        </div>
+        </div >
     );
 }
