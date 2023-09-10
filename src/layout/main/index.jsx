@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import '../../App.css'
 
 import { Avatar, Badge, Button, ConfigProvider, Row, Space, theme, message } from 'antd';
@@ -66,6 +66,11 @@ function Main({ children, breadcumb }) {
     const breadcumbItems = breadcumb;
 
     const { token: { colorBgContainer } } = theme.useToken();
+
+
+    useEffect(() => {
+    }, [])
+
 
     const handleClick = () => {
         setIsDarkMode((previousValue) => !previousValue);

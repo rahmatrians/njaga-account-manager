@@ -1,9 +1,13 @@
-import { useState } from "react";
-import { Avatar, Button, Card, Col, FloatButton, Row, Switch, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { Avatar, Button, Card, Col, FloatButton, Row, Typography } from "antd";
 import { UserAddOutlined, RightOutlined } from '@ant-design/icons';
 const { Title } = Typography;
 import { Link, useNavigate } from "react-router-dom";
 import { storeItem } from '../../utils/storeItem';
+
+import { firestore } from "../../config/firebase";
+import { collection, doc, getDocs, query, where, onSnapshot } from "firebase/firestore";
+
 
 
 export default function Platform() {
@@ -11,9 +15,28 @@ export default function Platform() {
     const navigate = useNavigate();
     const fillMenuActive = storeItem((state) => state.fillMenuActive);
 
-    const onChange = (checked) => {
-        setLoading(!checked);
-    };
+    const [platforms, setPlatforms] = useState([]);
+
+    useEffect(() => {
+        getPlatforms();
+    }, [])
+
+
+    const getPlatforms = async () => {
+        setLoading(true);
+        // realtime query
+        const q = query(collection(firestore, "platforms"));
+        onSnapshot(q, (querySnapshot) => {
+            let tempPlatforms = [];
+            querySnapshot.forEach((doc) => {
+                tempPlatforms.push({ 'id': doc.id, ...doc.data() });
+            });
+
+            setPlatforms(tempPlatforms);
+            setTimeout(() => setLoading(false), 500);
+        });
+    }
+
 
     return (
         <div
@@ -24,7 +47,6 @@ export default function Platform() {
             }}
         >
 
-            <Switch checked={!loading} onChange={onChange} />
             <FloatButton
                 onClick={() => navigate('/platform/add')}
                 shape="circle"
@@ -39,10 +61,10 @@ export default function Platform() {
             />
             <Row gutter={32}>
 
-                {([8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]).map((idx) => (
+                {!!platforms && platforms.map((val) => (
 
-                    <Col flex={'auto'} key={idx}>
-                        <Link to={`/platform/${idx}`}>
+                    <Col flex={'auto'} key={val.id}>
+                        <Link to={`/platform/${val.id}`}>
                             <Card
                                 style={{
                                     minWidth: 200,
@@ -66,11 +88,11 @@ export default function Platform() {
                                                 marginRight: 20
                                             }}
                                         >
-                                            Fa
+                                            {val.name.split(" ").length > 1 ? val.name.split(" ")[0][0] + val.name.split(" ")[1][0] : val.name.slice(0, 2)}
                                         </Avatar>
                                         <div>
-                                            <Title level={4} style={{ color: '#f56a00', margin: 0, padding: 0 }}>Facebook</Title>
-                                            <p style={{ color: 'grey', margin: 0, padding: 0 }}>{("rxhmxtrxxns@proton.com").length > 20 ? ("rxhmxtrxxns@proton.com").slice(0, 17) + '...' : "rxhmxtrxxns@proton.com"}</p>
+                                            <Title level={4} style={{ color: '#f56a00', margin: 0, padding: 0 }}>{val.name}</Title>
+                                            <p style={{ color: 'grey', margin: 0, padding: 0 }}>{val.aliasName.length > 20 ? val.aliasName.slice(0, 17) + '...' : val.aliasName}</p>
                                         </div>
                                     </Row>
 

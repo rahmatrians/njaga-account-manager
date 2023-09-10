@@ -28,6 +28,7 @@ import { storeItem } from '../../utils/storeItem';
 import { supabase } from "../../config/supabase";
 import { firestore } from "../../config/firebase";
 import { doc, setDoc, addDoc, collection } from "firebase/firestore";
+import { nanoID } from "../../utils/nanoID";
 
 
 export default function CategoryAdd() {
@@ -77,8 +78,14 @@ export default function CategoryAdd() {
 
         try {
             // Add a new document in collection "cities"
-            // const setCategory = await setDoc(doc(firestore, "categories", values.title), {
-            const setCategory = await addDoc(collection(firestore, "categories"), {
+
+            const setUID = nanoID();
+            // add using custom ID
+            setDoc(doc(firestore, "categories", setUID), {
+
+                // add using auto-generated ID
+                // const setCategory = await addDoc(collection(firestore, "categories"), {
+                id: setUID,
                 title: values.title,
                 description: values.description,
                 icon: values.icon
