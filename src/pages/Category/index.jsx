@@ -25,7 +25,7 @@ export default function Category() {
         onSnapshot(q, (querySnapshot) => {
             let tempCategories = [];
             querySnapshot.forEach((doc) => {
-                tempCategories.push(doc.data());
+                tempCategories.push({ id: doc.id, ...doc.data() });
             });
 
             setCategories(tempCategories);
@@ -70,13 +70,13 @@ export default function Category() {
 
                 {!!categories && categories.map((val) => (
 
-                    <Col flex="auto" key={val.title}>
-                        <Link to={'record/id'}>
+                    <Col flex="auto" key={val.id}>
+                        <Link to={`/category/${val.id}`}>
                             <Card
+                                bordered={true}
                                 style={{
                                     minWidth: 320,
                                     borderRadius: 16,
-                                    borderWidth: 0,
                                     marginBottom: 30,
                                     background: '#181818'
                                 }}

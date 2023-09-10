@@ -7,8 +7,8 @@ import PrivateRoute from "./PrivateRoute";
 import Dashboard from "../pages/Dashboard";
 
 import Category from "../pages/Category";
-
 import CategoryAdd from "../pages/Category/add";
+import CategoryDetail from "../pages/Category/detail";
 
 import Platform from "../pages/Platform";
 import PlatformAdd from "../pages/Platform/add";
@@ -52,6 +52,14 @@ export const Router = createBrowserRouter([
             { path: 'category', title: 'Category' },
             { path: 'add', title: 'Add' },
         ]}><CategoryAdd /></PrivateRoute>,
+        // errorElement: 
+    },
+    {
+        path: "category/:id",
+        element: <PrivateRoute breadcumb={[
+            { path: 'category', title: 'Category' },
+            { path: 'detail', title: 'Detail' },
+        ]}><CategoryDetail /></PrivateRoute>,
         // errorElement: 
     },
     {

@@ -25,7 +25,7 @@ export default function Platform() {
     const getPlatforms = async () => {
         setLoading(true);
         // realtime query
-        const q = query(collection(firestore, "platforms"));
+        const q = query(collection(firestore, "accounts"));
         onSnapshot(q, (querySnapshot) => {
             let tempPlatforms = [];
             querySnapshot.forEach((doc) => {

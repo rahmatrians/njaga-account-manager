@@ -1,31 +1,20 @@
 import {
     Button,
-    Cascader,
     Col,
-    DatePicker,
     Divider,
     Form,
     Input,
-    InputNumber,
-    Radio,
     Row,
-    Select,
     Space,
-    Switch,
     message,
-    TreeSelect,
-    Upload,
 } from "antd";
-import ImgCrop from 'antd-img-crop';
 import { useEffect, useState } from "react";
-import axios from 'axios';
-import { InboxOutlined, SyncOutlined, LeftOutlined, SaveOutlined } from '@ant-design/icons';
-import { createHashRouter, useNavigate } from "react-router-dom";
+import { SyncOutlined, LeftOutlined, SaveOutlined } from '@ant-design/icons';
+import { useNavigate } from "react-router-dom";
 import Title from "antd/es/typography/Title";
 import { Content } from "antd/es/layout/layout";
 import { storeItem } from '../../utils/storeItem';
 
-import { supabase } from "../../config/supabase";
 import { firestore } from "../../config/firebase";
 import { doc, setDoc, addDoc, collection } from "firebase/firestore";
 import { nanoID } from "../../utils/nanoID";
@@ -47,39 +36,12 @@ export default function CategoryAdd() {
 
     }, [])
 
-    const enterLoading = (index) => {
-        setLoadings((prevLoadings) => {
-            const newLoadings = [...prevLoadings];
-            newLoadings[index] = true;
-            return newLoadings;
-        });
-        setTimeout(() => {
-            setLoadings((prevLoadings) => {
-                const newLoadings = [...prevLoadings];
-                newLoadings[index] = false;
-                return newLoadings;
-            });
-        }, 3000);
-    };
-
-    const showMessage = (type, message) => {
-        messageApi.open({
-            type: type,
-            content: message,
-            className: 'custom-class',
-            style: {
-                marginTop: '5vh',
-            },
-        });
-    };
-
     const onFinish = async (values) => {
         setLoading(true);
 
         try {
-            // Add a new document in collection "cities"
-
             const setUID = nanoID();
+            // Add a new document in collection "cities"
             // add using custom ID
             setDoc(doc(firestore, "categories", setUID), {
 
@@ -101,60 +63,9 @@ export default function CategoryAdd() {
     }
 
     const onFinishFailed = () => {
-        showMessage('error', 'Submit failed!');
+        fillToastMessage(['error', 'Submit failed!']);
     };
 
-    const createAccount = async (email, password) => {
-        // try {
-        //     return await supabase.auth.signUp({ email: email, password: password });
-        // } catch (error) {
-        //     console.log('got error : ', error);
-        // }
-    }
-
-    const createUser = async (authId, values) => {
-        // try {
-        //     return await supabase
-        //         .from('user')
-        //         .insert({
-        //             auth_id: authId,
-        //             title: values.title,
-        //             gender: values.gender,
-        //             email: values.email,
-        //             phone_number: values.prefix + values.phoneNumber,
-        //             province: values.province,
-        //             city: values.city.substr(2, 2),
-        //             district: values.district.substr(4, 3),
-        //             description: values.description,
-        //             role_id: '729fa554-65ab-43c4-bece-9f038794193a', //owner role id
-        //             active_status: values.activeStatus ? values.activeStatus : 0,
-        //             last_signin: new Date().toLocaleDateString("id-ID"),
-        //         })
-        // } catch (error) {
-        //     console.log('got error : ', error);
-        // }
-    }
-
-    const createStore = async (values) => {
-        try {
-            const { data } = await supabase.from('user').select(`id`).eq('email', values.email).single();
-
-            return await supabase
-                .from('store')
-                .insert({
-                    user_id: data.id,
-                    name: values.title,
-                    description: values.description,
-                    profile_pict: values.profilePicture[0].thumbUrl,
-                    banner: values.banner[0].thumbUrl,
-                    coor_latitude: values.coorLatitude,
-                    coor_longitude: values.coorLongitude,
-                    created_at: new Date().toLocaleDateString("id-ID"),
-                })
-        } catch (error) {
-            console.log('error', error);
-        }
-    }
 
 
     return (
