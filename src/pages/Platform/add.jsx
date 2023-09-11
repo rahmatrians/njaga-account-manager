@@ -31,7 +31,6 @@ export default function PlatformAdd() {
 
     // const [categoryId, setCategoryId] = useState(null);
     const [categories, setCategories] = useState([]);
-    const [isLocked, setIsLocked] = useState([]);
 
     useEffect(() => {
         getCategories();
@@ -48,15 +47,20 @@ export default function PlatformAdd() {
         // console.log(`selected ${value}`);
     };
 
-    const onLock = (fieldName, key) => {
-        let field = form.getFieldValue(fieldName);
+    const onLock = (isLock, key) => {
+        let field = form.getFieldsValue("accounts");
+        console.log(field.accounts[key].isLock);
 
-        if (field && Array.isArray(field) && field.length) {
-            if (field[key]?.value) {
-                field[key].value = '•••••••••';
-                form.setFieldsValue({ field });
-            }
-        }
+        // if (field && Array.isArray(field) && field.length) {
+        //     if (field[key]?.value) {
+        field.accounts[key].isLock = isLock;
+        form.setFieldsValue({ field });
+        // }
+        // }
+    };
+
+    const lockedStatus = (key) => {
+        return form.getFieldsValue("accounts")?.accounts[key]?.isLock;
     };
 
     const getCategories = async () => {
@@ -75,6 +79,12 @@ export default function PlatformAdd() {
         });
     }
 
+    const setAvatar = (name) => {
+        return name.split(" ").length > 1
+            ? (name.split(" ")[0][0] + name.split(" ")[1][0]).toUpperCase()
+            : name.length > 1 ? name.slice(0, 2).toUpperCase() : name.slice(0, 1).toUpperCase()
+    }
+
     const onFinish = async (values) => {
         setLoading(true);
 
@@ -87,7 +97,7 @@ export default function PlatformAdd() {
                 categoryId: values.category,
                 name: values.name,
                 aliasName: values.aliasName,
-                // avatar: values.avatar
+                avatar: setAvatar(values.name)
             });
 
             values.accounts?.map(val => {
@@ -97,6 +107,8 @@ export default function PlatformAdd() {
                     platormId: setPlatformUID,
                     label: val.label,
                     value: val.value,
+                    isLock: val.isLock,
+                    valueStrength: 0,
                 });
             })
 
@@ -228,17 +240,27 @@ export default function PlatformAdd() {
                                         <Input placeholder={`Type Label ${key + 1} here...`} size="large" />
                                     </Form.Item >
 
-                                    <Form.Item {...restField} label={`Value ${key + 1}`} name={[name, 'value']} messageVariables={{ another: 'good' }} rules={[
-                                        {
-                                            required: true,
-                                            message: `Please input Value ${key + 1}!`,
-                                        },
-                                    ]} hasFeedback>
-                                        <Input.Password
-                                            visibilityToggle={{ visible: true }}
-                                            iconRender={(visible) => (<Button size="small" type="primary" icon={visible ? <UnlockOutlined /> : <LockOutlined />}>{visible ? "Unlock" : "Locked"}</Button>)}
-                                            placeholder={`Type Value ${key + 1} here...`} size="large" />
-                                    </Form.Item >
+                                    <Row>
+                                        <Col flex={'auto'} style={{ marginRight: 8 }}>
+                                            <Form.Item {...restField} label={`Value ${key + 1}`} name={[name, 'value']} messageVariables={{ another: 'good' }} rules={[
+                                                {
+                                                    required: true,
+                                                    message: `Please input Value ${key + 1}!`,
+                                                },
+                                            ]} hasFeedback>
+                                                <Input.Password
+                                                    visibilityToggle={{ visible: !lockedStatus(key) }}
+                                                    iconRender={(visible) => (visible ? <UnlockOutlined /> : <LockOutlined />)}
+                                                    placeholder={`Type Value ${key + 1} here...`} size="large" />
+                                            </Form.Item >
+                                        </Col>
+
+                                        <Col>
+                                            <Form.Item hidden={false} {...restField} initialValue={true} name={[name, 'isLock']}>
+                                                <Button onClick={() => onLock(!lockedStatus(key), key)} icon={!lockedStatus(key) ? <LockOutlined /> : <UnlockOutlined />} size="large" type="primary" >{lockedStatus(key) ? "Unencrpyt" : "Encrypt"}</Button>
+                                            </Form.Item >
+                                        </Col>
+                                    </Row>
 
                                     <Divider orientation="left" dashed plain style={{ color: 'lightGrey' }}></Divider>
                                 </div>

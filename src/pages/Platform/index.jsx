@@ -89,7 +89,7 @@ export default function Platform() {
                                                 marginRight: 20
                                             }}
                                         >
-                                            {val.name.split(" ").length > 1 ? val.name.split(" ")[0][0].toUpperCase() + val.name.split(" ")[1][0].toUpperCase() : val.name.slice(0, 2).toUpperCase()}
+                                            {val.avatar}
                                         </Avatar>
                                         <div>
                                             <Title level={4} style={{ color: '#f56a00', margin: 0, padding: 0 }}>{val.name}</Title>

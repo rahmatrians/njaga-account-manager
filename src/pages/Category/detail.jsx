@@ -1,18 +1,27 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Card, Col, FloatButton, Row, Space, Typography } from "antd";
-import { LeftOutlined, RightOutlined, EditOutlined, UserAddOutlined } from '@ant-design/icons';
+import { Avatar, Button, Card, Col, Divider, FloatButton, Form, Input, Modal, Row, Space, Typography } from "antd";
+import { LeftOutlined, RightOutlined, EditOutlined, SaveOutlined, SyncOutlined, UserAddOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { storeItem } from "../../utils/storeItem";
 
 import { firestore } from "../../config/firebase";
 import { getDoc, doc, collection, getDocs, query, where, onSnapshot } from "firebase/firestore";
+import Title from "antd/es/skeleton/Title";
 
 
 export default function CategoryDetail() {
     const navigate = useNavigate();
     let { id } = useParams();
+    const fillToastMessage = storeItem((state) => state.fillToastMessage);
     const [loading, setLoading] = useState(false);
     const [category, setCategory] = useState({});
     const [platforms, setPlatforms] = useState([]);
+    const [form] = Form.useForm();
+
+    const [open, setOpen] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [modalText, setModalText] = useState('Content of the modal');
+
 
     useEffect(() => {
         getCategory();
@@ -57,6 +66,54 @@ export default function CategoryDetail() {
         });
     }
 
+    const showModal = () => {
+        setOpen(true);
+    };
+    const handleOk = () => {
+        setModalText('The modal will be closed after two seconds');
+        setConfirmLoading(true);
+        setTimeout(() => {
+            setOpen(false);
+            setConfirmLoading(false);
+        }, 2000);
+    };
+    const handleCancel = () => {
+        console.log('Clicked cancel button');
+        setOpen(false);
+    };
+
+    const onFinish = async (values) => {
+        setLoading(true);
+
+        try {
+            const setUID = nanoID();
+            // Add a new document in collection "cities"
+            // add using custom ID
+            setDoc(doc(firestore, "categories", setUID), {
+
+                // add using auto-generated ID
+                // const setCategory = await addDoc(collection(firestore, "categories"), {
+                id: setUID,
+                title: values.title,
+                description: values.description,
+                icon: values.icon,
+                total: 0,
+            }).then(async (res) => {
+                setLoading(false);
+                fillToastMessage(['success', 'Submit success!']);
+                navigate(-1);
+            })
+        } catch (error) {
+            setLoading(false);
+            fillToastMessage(['error', 'Submit failed!']);
+        }
+    }
+
+    const onFinishFailed = () => {
+        fillToastMessage(['error', 'Submit failed!']);
+    };
+
+
 
     return (
         <div
@@ -66,6 +123,101 @@ export default function CategoryDetail() {
                 borderRadius: 16,
             }}
         >
+
+            <Modal
+                title={<Typography.Title level={3} style={{ margin: 0 }}>Update</Typography.Title>}
+                open={open}
+                onOk={handleOk}
+                confirmLoading={confirmLoading}
+                onCancel={handleCancel}
+                maskClosable={false}
+                width={800}
+            >
+                <p>{modalText}</p>
+                <Form
+                    labelCol={{
+                        sm: {
+                            span: 8,
+                        },
+                        md: {
+                            span: 5,
+                        },
+                        lg: {
+                            span: 4,
+                        },
+                    }}
+                    labelAlign="left"
+                    // wrapperCol={{
+                    //     span: 14,
+                    // }}
+                    form={form}
+                    // layout="vertical"
+                    initialValues={{
+                        size: 'default',
+                    }}
+                    onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
+                    // onValuesChange={ }
+                    size={'default'}
+                    style={{ marginTop: 50 }}
+                >
+
+                    <Form.Item label="Title" name="title" messageVariables={{ another: 'good' }} rules={[
+                        {
+                            required: true,
+                            message: 'Please input Title!',
+                        },
+                    ]} hasFeedback>
+                        <Input placeholder="Type Title here..." size="large" />
+                    </Form.Item>
+
+                    <Form.Item label="Description" name="description" rules={[
+                        {
+                            required: true,
+                            message: 'Please input Description!',
+                        },
+                    ]} hasFeedback>
+                        <Input.TextArea rows={4} placeholder="Type Description here..." size="large" />
+                    </Form.Item>
+
+                    <Form.Item label="Icon" name="icon" messageVariables={{ another: 'good' }} rules={[
+                        {
+                            required: false,
+                            message: 'Please input Icon!',
+                        },
+                    ]} hasFeedback>
+                        <Input placeholder="Type Icon here..." size="large" />
+                    </Form.Item>
+
+                    {/* <Form.Item label="Avatar" name="province" rules={[
+                    {
+                        required: true,
+                        message: 'Please input your Avatar!',
+                    },
+                ]} hasFeedback>
+                    <Select onSelect={() => console.log('x')} onClick={() => getProvincies()} placeholder="Select Avatar here...">
+                        {provinceItems ? (provinceItems) : (<Select.Option disabled>- No Data -</Select.Option>)}
+                    </Select>
+                </Form.Item> */}
+
+                    <Divider orientation="left" dashed plain style={{ color: 'lightGrey' }}></Divider>
+                    <Form.Item label={'Action'} style={{ marginTop: 50 }}>
+                        <Space size={'small'}>
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                icon={<SaveOutlined />}
+                                loading={loading}
+                            >
+                                Save
+                            </Button>
+                            <Button icon={<SyncOutlined />} onClick={() => form.resetFields()}>
+                                Reset
+                            </Button>
+                        </Space>
+                    </Form.Item>
+                </Form>
+            </Modal>
 
             <FloatButton
                 onClick={() => navigate('/platform/add', { state: { categoryId: id } })}
@@ -102,7 +254,7 @@ export default function CategoryDetail() {
                                 <Row wrap={true} align="middle">
                                     <Typography.Title level={1} style={{ margin: 0, marginRight: 20, padding: 0 }}>{category.icon}</Typography.Title>
                                     <Typography.Title level={5} style={{ margin: 0, padding: 0, marginRight: 6 }}>{category.title}</Typography.Title>
-                                    <Button type="text" icon={<EditOutlined />} onClick={() => console.log('edit')}></Button>
+                                    <Button type="text" icon={<EditOutlined />} onClick={() => showModal()}></Button>
                                 </Row>
                             </Space>
                         </Row>
@@ -153,7 +305,7 @@ export default function CategoryDetail() {
                                                 marginRight: 20
                                             }}
                                         >
-                                            {val.name.split(" ").length > 1 ? val.name.split(" ")[0][0].toUpperCase() + val.name.split(" ")[1][0].toUpperCase() : val.name.slice(0, 2).toUpperCase()}
+                                            {val.avatar}
                                         </Avatar>
                                         <div>
                                             <Typography.Title level={4} style={{ color: '#f56a00', margin: 0, padding: 0 }}>{val.name}</Typography.Title>
