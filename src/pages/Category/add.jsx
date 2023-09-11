@@ -50,7 +50,8 @@ export default function CategoryAdd() {
                 id: setUID,
                 title: values.title,
                 description: values.description,
-                icon: values.icon
+                icon: values.icon,
+                total: 0,
             }).then(async (res) => {
                 setLoading(false);
                 fillToastMessage(['success', 'Submit success!']);
@@ -126,7 +127,7 @@ export default function CategoryAdd() {
                         message: 'Please input Title!',
                     },
                 ]} hasFeedback>
-                    <Input placeholder="Type Title here..." />
+                    <Input placeholder="Type Title here..." size="large" />
                 </Form.Item>
 
                 <Form.Item label="Description" name="description" rules={[
@@ -135,7 +136,7 @@ export default function CategoryAdd() {
                         message: 'Please input Description!',
                     },
                 ]} hasFeedback>
-                    <Input.TextArea rows={4} placeholder="Type Description here..." />
+                    <Input.TextArea rows={4} placeholder="Type Description here..." size="large" />
                 </Form.Item>
 
                 <Form.Item label="Icon" name="icon" messageVariables={{ another: 'good' }} rules={[
@@ -144,7 +145,7 @@ export default function CategoryAdd() {
                         message: 'Please input Icon!',
                     },
                 ]} hasFeedback>
-                    <Input placeholder="Type Icon here..." />
+                    <Input placeholder="Type Icon here..." size="large" />
                 </Form.Item>
 
                 {/* <Form.Item label="Avatar" name="province" rules={[

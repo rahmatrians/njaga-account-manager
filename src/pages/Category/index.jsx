@@ -83,8 +83,8 @@ export default function Category() {
                                 loading={loading}
                             >
                                 <Row justify='space-between' align='middle'>
-                                    <Title level={1}>🚀</Title>
-                                    <Title level={2} style={{ color: 'grey', fontWeight: 'bold', margin: 0, padding: 0 }}>89</Title>
+                                    <Title level={1}>{val.icon}</Title>
+                                    <Title level={2} style={{ color: 'grey', fontWeight: 'bold', margin: 0, padding: 0, marginRight: 8 }}>{val.total}</Title>
                                 </Row>
 
                                 <Row justify='space-between' align='middle' style={{ marginTop: 10 }}>

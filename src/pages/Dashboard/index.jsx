@@ -26,9 +26,9 @@ export default function Dashboard() {
             <Switch checked={!loading} onChange={onChange} />
             <Row gutter={32}>
 
-                {([8, 8, 8, 8]).map(() => (
+                {([812, 8, 811, 4]).map((val) => (
 
-                    <Col flex="auto">
+                    <Col flex="auto" key={val}>
                         <Link to={'record/id'}>
                             <Card
                                 style={{

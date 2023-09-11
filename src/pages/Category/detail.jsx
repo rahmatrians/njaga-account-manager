@@ -19,31 +19,22 @@ export default function CategoryDetail() {
         getPlatforms();
     }, [])
 
-    const items = [
-        {
-            key: '1',
-            label: 'UserName',
-            children: 'Zhou Maomao',
-        },
-        {
-            key: '4',
-            label: 'Address',
-            span: 2,
-            children: 'No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China',
-        }
-    ];
-
     const getCategory = async () => {
         setLoading(true);
 
         try {
-            const docSnap = await getDoc(doc(firestore, "categories", id));
+            // non-realtime query
+            // const docSnap = await getDoc(doc(firestore, "categories", id));
 
-            if (docSnap.exists()) {
-                setCategory(docSnap.data());
-            } else {
-                console.log("No such document!");
-            }
+            // realtime query
+            const q = query(doc(firestore, "categories", id));
+            onSnapshot(q, (querySnapshot) => {
+                if (querySnapshot.exists()) {
+                    setCategory(querySnapshot.data());
+                } else {
+                    console.log("No such document!");
+                }
+            });
         } catch (error) {
             console.log("error get data");
         }
@@ -54,7 +45,7 @@ export default function CategoryDetail() {
     const getPlatforms = async () => {
         setLoading(true);
         // realtime query
-        const q = query(collection(firestore, "platforms"));
+        const q = query(collection(firestore, "platforms"), where("categoryId", "==", id));
         onSnapshot(q, (querySnapshot) => {
             let tempPlatforms = [];
             querySnapshot.forEach((doc) => {
@@ -77,7 +68,7 @@ export default function CategoryDetail() {
         >
 
             <FloatButton
-                onClick={() => navigate('/platform/add')}
+                onClick={() => navigate('/platform/add', { state: { categoryId: id } })}
                 shape="circle"
                 type="primary"
                 style={{
@@ -109,7 +100,7 @@ export default function CategoryDetail() {
                                     <Button type="text" icon={<LeftOutlined />} onClick={() => navigate(-1)}></Button>
                                 </Col>
                                 <Row wrap={true} align="middle">
-                                    <Typography.Title level={1} style={{ margin: 0, marginRight: 20, padding: 0 }}>🚀</Typography.Title>
+                                    <Typography.Title level={1} style={{ margin: 0, marginRight: 20, padding: 0 }}>{category.icon}</Typography.Title>
                                     <Typography.Title level={5} style={{ margin: 0, padding: 0, marginRight: 6 }}>{category.title}</Typography.Title>
                                     <Button type="text" icon={<EditOutlined />} onClick={() => console.log('edit')}></Button>
                                 </Row>
@@ -120,10 +111,10 @@ export default function CategoryDetail() {
                         <Row wrap={true} justify="space-between" align="middle">
                             <Space size={50}>
                                 <Col style={{ maxWidth: 400 }}>
-                                    <Typography.Paragraph style={{ opacity: 0.6, margin: 0, padding: 0 }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incrunt mollit anim id est laborum...</Typography.Paragraph>
+                                    <Typography.Paragraph style={{ opacity: 0.6, margin: 0, padding: 0 }}>{category.description}</Typography.Paragraph>
                                 </Col>
                                 <Col style={{ textAlign: 'center' }}>
-                                    <Typography.Title level={1} style={{ margin: 0, padding: 0 }}>{9}</Typography.Title>
+                                    <Typography.Title level={1} style={{ margin: 0, padding: 0 }}>{category.total}</Typography.Title>
                                     <Typography.Text level={5} style={{ margin: 0, padding: 0 }}>Account</Typography.Text>
                                 </Col>
                             </Space>
