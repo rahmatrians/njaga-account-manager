@@ -104,7 +104,7 @@ export default function PlatformAdd() {
                 const setAccountUID = nanoID();
                 batch.set(doc(firestore, "accounts", setAccountUID), {
                     id: setAccountUID,
-                    platormId: setPlatformUID,
+                    platformId: setPlatformUID,
                     label: val.label,
                     value: val.value,
                     isLock: val.isLock,

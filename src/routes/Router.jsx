@@ -12,6 +12,7 @@ import CategoryDetail from "../pages/Category/detail";
 
 import Platform from "../pages/Platform";
 import PlatformAdd from "../pages/Platform/add";
+import PlatformDetail from "../pages/Platform/detail";
 
 import Setting from "../pages/Setting";
 
@@ -76,6 +77,14 @@ export const Router = createBrowserRouter([
             { path: 'platform', title: 'Platform' },
             { path: 'add', title: 'Add' },
         ]}><PlatformAdd /></PrivateRoute>,
+        // errorElement: 
+    },
+    {
+        path: "platform/:id",
+        element: <PrivateRoute breadcumb={[
+            { path: 'platform', title: 'Platform' },
+            { path: 'detail', title: 'Detail' },
+        ]}><PlatformDetail /></PrivateRoute>,
         // errorElement: 
     },
     {

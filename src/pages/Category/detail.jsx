@@ -116,7 +116,7 @@ export default function CategoryDetail() {
                 maskClosable={false}
                 width={800}
                 footer={
-                    <Form.Item style={{ marginTop: 50 }}>
+                    <Form.Item>
                         <Space size={'small'}>
                             <Button
                                 type="primary"
