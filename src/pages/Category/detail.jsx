@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { Avatar, Button, Card, Col, Divider, FloatButton, Form, Input, Modal, Row, Space, Typography } from "antd";
-import { LeftOutlined, RightOutlined, EditOutlined, SaveOutlined, SyncOutlined, UserAddOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, EditOutlined, SaveOutlined, CloseOutlined, UserAddOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { storeItem } from "../../utils/storeItem";
 
 import { firestore } from "../../config/firebase";
-import { getDoc, doc, collection, getDocs, query, where, onSnapshot } from "firebase/firestore";
-import Title from "antd/es/skeleton/Title";
+import { getDoc, doc, collection, getDocs, updateDoc, query, where, onSnapshot } from "firebase/firestore";
 
 
 export default function CategoryDetail() {
@@ -20,7 +19,6 @@ export default function CategoryDetail() {
 
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const [modalText, setModalText] = useState('Content of the modal');
 
 
     useEffect(() => {
@@ -69,42 +67,29 @@ export default function CategoryDetail() {
     const showModal = () => {
         setOpen(true);
     };
-    const handleOk = () => {
-        setModalText('The modal will be closed after two seconds');
-        setConfirmLoading(true);
-        setTimeout(() => {
-            setOpen(false);
-            setConfirmLoading(false);
-        }, 2000);
-    };
+
+
     const handleCancel = () => {
-        console.log('Clicked cancel button');
         setOpen(false);
     };
 
     const onFinish = async (values) => {
-        setLoading(true);
+        setConfirmLoading(true);
 
         try {
-            const setUID = nanoID();
-            // Add a new document in collection "cities"
-            // add using custom ID
-            setDoc(doc(firestore, "categories", setUID), {
-
-                // add using auto-generated ID
-                // const setCategory = await addDoc(collection(firestore, "categories"), {
-                id: setUID,
+            // Update a document in collection
+            updateDoc(doc(firestore, "categories", category.id), {
                 title: values.title,
                 description: values.description,
                 icon: values.icon,
-                total: 0,
             }).then(async (res) => {
-                setLoading(false);
+                setConfirmLoading(false);
+                setOpen(false);
                 fillToastMessage(['success', 'Submit success!']);
-                navigate(-1);
             })
         } catch (error) {
-            setLoading(false);
+            setConfirmLoading(false);
+            setOpen(false);
             fillToastMessage(['error', 'Submit failed!']);
         }
     }
@@ -127,13 +112,27 @@ export default function CategoryDetail() {
             <Modal
                 title={<Typography.Title level={3} style={{ margin: 0 }}>Update</Typography.Title>}
                 open={open}
-                onOk={handleOk}
-                confirmLoading={confirmLoading}
                 onCancel={handleCancel}
                 maskClosable={false}
                 width={800}
+                footer={
+                    <Form.Item style={{ marginTop: 50 }}>
+                        <Space size={'small'}>
+                            <Button
+                                type="primary"
+                                icon={<SaveOutlined />}
+                                loading={confirmLoading}
+                                onClick={() => form.submit()}
+                            >
+                                Save
+                            </Button>
+                            <Button icon={<CloseOutlined />} onClick={handleCancel}>
+                                Cancel
+                            </Button>
+                        </Space>
+                    </Form.Item>
+                }
             >
-                <p>{modalText}</p>
                 <Form
                     labelCol={{
                         sm: {
@@ -158,11 +157,11 @@ export default function CategoryDetail() {
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                     // onValuesChange={ }
-                    size={'default'}
+                    size={'large'}
                     style={{ marginTop: 50 }}
                 >
 
-                    <Form.Item label="Title" name="title" messageVariables={{ another: 'good' }} rules={[
+                    <Form.Item initialValue={category.title} label="Title" name="title" messageVariables={{ another: 'good' }} rules={[
                         {
                             required: true,
                             message: 'Please input Title!',
@@ -171,7 +170,7 @@ export default function CategoryDetail() {
                         <Input placeholder="Type Title here..." size="large" />
                     </Form.Item>
 
-                    <Form.Item label="Description" name="description" rules={[
+                    <Form.Item initialValue={category.description} label="Description" name="description" rules={[
                         {
                             required: true,
                             message: 'Please input Description!',
@@ -180,7 +179,7 @@ export default function CategoryDetail() {
                         <Input.TextArea rows={4} placeholder="Type Description here..." size="large" />
                     </Form.Item>
 
-                    <Form.Item label="Icon" name="icon" messageVariables={{ another: 'good' }} rules={[
+                    <Form.Item initialValue={category.icon} label="Icon" name="icon" messageVariables={{ another: 'good' }} rules={[
                         {
                             required: false,
                             message: 'Please input Icon!',
@@ -201,7 +200,7 @@ export default function CategoryDetail() {
                 </Form.Item> */}
 
                     <Divider orientation="left" dashed plain style={{ color: 'lightGrey' }}></Divider>
-                    <Form.Item label={'Action'} style={{ marginTop: 50 }}>
+                    {/* <Form.Item label={'Action'} style={{ marginTop: 50 }}>
                         <Space size={'small'}>
                             <Button
                                 type="primary"
@@ -215,7 +214,7 @@ export default function CategoryDetail() {
                                 Reset
                             </Button>
                         </Space>
-                    </Form.Item>
+                    </Form.Item> */}
                 </Form>
             </Modal>
 
