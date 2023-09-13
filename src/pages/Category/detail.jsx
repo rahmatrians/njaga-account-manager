@@ -280,7 +280,7 @@ export default function CategoryDetail() {
                 {!!platforms && platforms.map((val) => (
 
                     <Col flex={'auto'} key={val.id}>
-                        <Link to={`/platform/${val.id}`}>
+                        <Link to={`/platform/${val.id}`} state={{ categoryName: category.title }} >
                             <Card
                                 bordered={true}
                                 style={{

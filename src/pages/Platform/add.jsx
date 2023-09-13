@@ -18,6 +18,7 @@ import { nanoID } from "../../utils/nanoID";
 
 import { firestore } from "../../config/firebase";
 import { doc, collection, onSnapshot, query, writeBatch } from "firebase/firestore";
+import { AesEncrypt } from "../../utils/AesEncrypt";
 
 
 
@@ -106,7 +107,7 @@ export default function PlatformAdd() {
                     id: setAccountUID,
                     platformId: setPlatformUID,
                     label: val.label,
-                    value: val.value,
+                    value: val.isLock ? AesEncrypt(val.value, "encrypt") : val.value,
                     isLock: val.isLock,
                     valueStrength: 0,
                 });
@@ -256,7 +257,7 @@ export default function PlatformAdd() {
                                         </Col>
 
                                         <Col>
-                                            <Form.Item hidden={false} {...restField} initialValue={true} name={[name, 'isLock']}>
+                                            <Form.Item hidden={false} {...restField} initialValue={false} name={[name, 'isLock']}>
                                                 <Button onClick={() => onLock(!lockedStatus(key), key)} icon={!lockedStatus(key) ? <LockOutlined /> : <UnlockOutlined />} size="large" type="primary" >{lockedStatus(key) ? "Unencrpyt" : "Encrypt"}</Button>
                                             </Form.Item >
                                         </Col>

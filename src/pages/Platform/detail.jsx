@@ -1,20 +1,24 @@
 import { useEffect, useState } from "react";
 import { Avatar, Button, Card, Col, Divider, FloatButton, Form, Input, Modal, Row, Select, Space, Tag, Typography } from "antd";
-import { LeftOutlined, UnlockOutlined, LockOutlined, EditOutlined, SaveOutlined, CloseOutlined, UserAddOutlined } from '@ant-design/icons';
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { LeftOutlined, UnlockOutlined, FileOutlined, LockOutlined, EditOutlined, SaveOutlined, CloseOutlined, UserAddOutlined } from '@ant-design/icons';
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { storeItem } from "../../utils/storeItem";
 
 import { firestore } from "../../config/firebase";
 import { getDoc, doc, collection, getDocs, updateDoc, query, where, onSnapshot } from "firebase/firestore";
+import { AesEncrypt } from "../../utils/AesEncrypt";
 
 
 export default function PlatformDetail() {
     const navigate = useNavigate();
     let { id } = useParams();
+    const location = useLocation();
+    // const categoryName = location?.state.categoryName;
     const fillToastMessage = storeItem((state) => state.fillToastMessage);
     const [loading, setLoading] = useState(false);
     const [platform, setPlatform] = useState({});
     const [accounts, setAccounts] = useState([]);
+    const [categoryName, setCategoryName] = useState(location?.state.categoryName);
     const [categories, setCategories] = useState([]);
     const [form] = Form.useForm();
 
@@ -71,13 +75,12 @@ export default function PlatformDetail() {
     const getAccounts = async () => {
         setLoading(true);
         // realtime query
-        const q = query(collection(firestore, "accounts"), where("platormId", "==", id));
+        const q = query(collection(firestore, "accounts"), where("platformId", "==", id));
         onSnapshot(q, (querySnapshot) => {
             let tempAccounts = [];
             querySnapshot.forEach((doc) => {
                 tempAccounts.push({ id: doc.id, ...doc.data() });
             });
-
             setAccounts(tempAccounts);
             setTimeout(() => setLoading(false), 500);
         });
@@ -92,15 +95,22 @@ export default function PlatformDetail() {
         setOpen(false);
     };
 
+    const setAvatar = (name) => {
+        return name.split(" ").length > 1
+            ? (name.split(" ")[0][0] + name.split(" ")[1][0]).toUpperCase()
+            : name.length > 1 ? name.slice(0, 2).toUpperCase() : name.slice(0, 1).toUpperCase()
+    }
+
     const onFinish = async (values) => {
         setConfirmLoading(true);
 
         try {
             // Update a document in collection
-            updateDoc(doc(firestore, "categories", platform.id), {
-                title: values.title,
-                description: values.description,
-                icon: values.icon,
+            updateDoc(doc(firestore, "platforms", platform.id), {
+                categoryId: values.category,
+                name: values.name,
+                aliasName: values.aliasName,
+                avatar: setAvatar(values.name),
             }).then(async (res) => {
                 setConfirmLoading(false);
                 setOpen(false);
@@ -139,6 +149,7 @@ export default function PlatformDetail() {
                         <Space size={'small'}>
                             <Button
                                 type="primary"
+                                htmlType="submit"
                                 icon={<SaveOutlined />}
                                 loading={confirmLoading}
                                 onClick={() => form.submit()}
@@ -232,15 +243,15 @@ export default function PlatformDetail() {
             />
 
             <Row wrap={true} justify="space-between" align="top">
-                <Col span={6} style={{ marginRight: 20 }}>
+                <Col span={6}>
                     <Card
                         bordered={false}
                         style={{
                             // minWidth: 320,
                             borderRadius: 16,
                             marginBottom: 30,
-                            // background: '#181818',
-                            backgroundImage: "linear-gradient(to right, #675bff, #cb83ff)"
+                            background: '#76BA99',
+                            // backgroundImage: "linear-gradient(to right, #675bff, #cb83ff)"
                         }}
                         loading={loading}
                     >
@@ -254,7 +265,7 @@ export default function PlatformDetail() {
                                     shape="square"
                                     size={80}
                                     style={{
-                                        backgroundColor: 'rgba(255,255,255,0.1)',
+                                        backgroundColor: 'rgba(255,255,255,0.2)',
                                         color: 'white',
                                         marginRight: 20,
                                         fontSize: 32
@@ -267,13 +278,13 @@ export default function PlatformDetail() {
                             </Col>
 
                             <Divider orientation="left" dashed plain style={{ color: 'lightGrey' }}></Divider>
-                            <Tag color="white" style={{ background: 'rgba(255,255,255,0.2)', borderRadius: 6, borderWidth: 0.8, borderColor: 'white', padding: '4px 8px' }}>Category Name</Tag>
+                            <Tag color="white" style={{ background: 'rgba(255,255,255,0.2)', borderRadius: 6, borderWidth: 0.8, borderColor: 'white', padding: '4px 8px' }}>{categoryName}</Tag>
 
                         </Col>
                     </Card>
                 </Col>
 
-                <Col flex={'auto'}>
+                <Col span={17}>
                     <Card
                         bordered={false}
                         style={{
@@ -314,10 +325,11 @@ export default function PlatformDetail() {
                                                 value={val.isLock ? "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" : val.value}
                                                 disabled={true}
                                                 visibilityToggle={{ visible: !val.isLock }}
-                                                iconRender={(visible) => (visible ? <Space><Button type="default" size="small" onClick={() => { navigator.clipboard.writeText(val.value) }}>x</Button><UnlockOutlined /></Space> : <Space><Button type="default" size="small" onClick={() => { navigator.clipboard.writeText(val.value) }}>x</Button><LockOutlined /></Space>)} />
+                                                iconRender={(visible) => (visible ? <Space><Button icon={<FileOutlined />} type="default" size="small" onClick={() => { navigator.clipboard.writeText(val.isLock ? AesEncrypt(val.value, "decrypt") : val.value) }}></Button><UnlockOutlined /></Space> : <Space><Button icon={<FileOutlined />} type="default" size="small" onClick={() => { navigator.clipboard.writeText(val.isLock ? AesEncrypt(val.value, "decrypt") : val.value) }}></Button><LockOutlined /></Space>)} />
                                             {/* /> */}
                                         </Row>
                                     </Card>
+
                                 </Col>
                             ))}
 
