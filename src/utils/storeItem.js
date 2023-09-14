@@ -19,6 +19,8 @@ export const storeItem = create(
             refreshToken: null,
             menuActive: '1',
             toastMessage: null,
+            accountAddModal: false,
+            accountUpdateModal: false,
 
             increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
             fillUserId: (val) => set({ userId: val }),
@@ -28,6 +30,8 @@ export const storeItem = create(
             fillRefreshToken: (val) => set({ refreshToken: val }),
             fillMenuActive: (val) => set({ menuActive: val }),
             fillToastMessage: (val) => set({ toastMessage: val }),
+            fillAccountAddModal: (val) => set({ accountAddModal: val }),
+            fillAccountUpdateModal: (val) => set({ accountUpdateModal: val }),
 
             removeUserId: () => set({ userId: null }),
             removeFullname: () => set({ fullname: null }),

@@ -7,18 +7,24 @@ import { storeItem } from "../../utils/storeItem";
 import { firestore } from "../../config/firebase";
 import { getDoc, doc, collection, getDocs, updateDoc, query, where, onSnapshot } from "firebase/firestore";
 import { AesEncrypt } from "../../utils/AesEncrypt";
+import AccountUpdate from "./accountUpdate";
+import AccountAdd from "./accountAdd";
 
 
 export default function PlatformDetail() {
     const navigate = useNavigate();
     let { id } = useParams();
-    const location = useLocation();
+    // const location = useLocation();
     // const categoryName = location?.state.categoryName;
+    const { accountAddModal, accountUpdateModal } = storeItem();
     const fillToastMessage = storeItem((state) => state.fillToastMessage);
+    const fillAccountAddModal = storeItem((state) => state.fillAccountAddModal);
+    const fillAccountUpdateModal = storeItem((state) => state.fillAccountUpdateModal);
     const [loading, setLoading] = useState(false);
     const [platform, setPlatform] = useState({});
     const [accounts, setAccounts] = useState([]);
-    const [categoryName, setCategoryName] = useState(location?.state.categoryName);
+    const [accountSelected, setAccountSelected] = useState({});
+    const [category, setCategory] = useState({});
     const [categories, setCategories] = useState([]);
     const [form] = Form.useForm();
 
@@ -61,6 +67,15 @@ export default function PlatformDetail() {
             onSnapshot(q, (querySnapshot) => {
                 if (querySnapshot.exists()) {
                     setPlatform(querySnapshot.data());
+
+                    const q2 = query(doc(firestore, "categories", querySnapshot.data().categoryId));
+                    onSnapshot(q2, (qSnapshot2) => {
+                        if (qSnapshot2.exists()) {
+                            setCategory(qSnapshot2.data());
+                        } else {
+                            console.log("No such document!");
+                        }
+                    });
                 } else {
                     console.log("No such document!");
                 }
@@ -138,8 +153,11 @@ export default function PlatformDetail() {
             }}
         >
 
+            {accountAddModal && <AccountAdd platformId={id} />}
+            {accountUpdateModal && <AccountUpdate data={accountSelected} />}
+
             <Modal
-                title={<Typography.Title level={3} style={{ margin: 0 }}>Update</Typography.Title>}
+                title={<Typography.Title level={3} style={{ margin: 0 }}>Update Platform</Typography.Title>}
                 open={open}
                 onCancel={handleCancel}
                 maskClosable={false}
@@ -230,7 +248,7 @@ export default function PlatformDetail() {
             </Modal>
 
             <FloatButton
-                onClick={() => navigate('/platform/add', { state: { categoryId: id } })}
+                onClick={() => fillAccountAddModal(true)}
                 shape="circle"
                 type="primary"
                 style={{
@@ -278,7 +296,7 @@ export default function PlatformDetail() {
                             </Col>
 
                             <Divider orientation="left" dashed plain style={{ color: 'lightGrey' }}></Divider>
-                            <Tag color="white" style={{ background: 'rgba(255,255,255,0.2)', borderRadius: 6, borderWidth: 0.8, borderColor: 'white', padding: '4px 8px' }}>{categoryName}</Tag>
+                            <Tag color="white" style={{ background: 'rgba(255,255,255,0.2)', borderRadius: 6, borderWidth: 0.8, borderColor: 'white', padding: '4px 8px' }}>{category.title}</Tag>
 
                         </Col>
                     </Card>
@@ -319,7 +337,7 @@ export default function PlatformDetail() {
                                             </Col>
 
                                             <Col>
-                                                <Button onClick={() => showModal()} type="text" icon={<EditOutlined />} style={{ color: 'lightGrey' }} size={32} />
+                                                <Button onClick={() => (setAccountSelected(val), fillAccountUpdateModal(true))} type="text" icon={<EditOutlined />} style={{ color: 'lightGrey' }} size={32} />
                                             </Col>
                                             <Input.Password
                                                 value={val.isLock ? "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" : val.value}

@@ -110,7 +110,7 @@ export default function CategoryDetail() {
         >
 
             <Modal
-                title={<Typography.Title level={3} style={{ margin: 0 }}>Update</Typography.Title>}
+                title={<Typography.Title level={3} style={{ margin: 0 }}>Update Category</Typography.Title>}
                 open={open}
                 onCancel={handleCancel}
                 maskClosable={false}
