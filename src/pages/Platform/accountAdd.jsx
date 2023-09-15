@@ -10,7 +10,7 @@ import { AesEncrypt } from "../../utils/AesEncrypt";
 import { nanoID } from "../../utils/nanoID";
 
 
-export default function AccountAdd({ platformId }) {
+export default function AccountAdd({ platformId, categoryId }) {
     const fillToastMessage = storeItem((state) => state.fillToastMessage);
     const fillAccountAddModal = storeItem((state) => state.fillAccountAddModal);
     const [form] = Form.useForm();
@@ -54,6 +54,7 @@ export default function AccountAdd({ platformId }) {
                 batch.set(doc(firestore, "accounts", setAccountUID), {
                     id: setAccountUID,
                     platformId: platformId,
+                    categoryId: categoryId,
                     label: val.label,
                     value: val.isLock ? AesEncrypt(val.value, "encrypt") : val.value,
                     isLock: val.isLock,

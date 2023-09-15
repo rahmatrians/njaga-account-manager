@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Card, Col, Divider, FloatButton, Form, Input, Modal, Row, Select, Space, Tag, Typography } from "antd";
-import { LeftOutlined, UnlockOutlined, FileOutlined, LockOutlined, EditOutlined, SaveOutlined, CloseOutlined, UserAddOutlined } from '@ant-design/icons';
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Avatar, Button, Card, Col, Divider, FloatButton, Form, Input, Modal, Popconfirm, Row, Select, Space, Tag, Typography } from "antd";
+import { DeleteOutlined, LeftOutlined, UnlockOutlined, FileOutlined, LockOutlined, EditOutlined, SaveOutlined, CloseOutlined, UserAddOutlined } from '@ant-design/icons';
+import { useNavigate, useParams } from "react-router-dom";
 import { storeItem } from "../../utils/storeItem";
 
 import { firestore } from "../../config/firebase";
-import { getDoc, doc, collection, getDocs, updateDoc, query, where, onSnapshot } from "firebase/firestore";
+import { doc, collection, updateDoc, query, where, onSnapshot, writeBatch } from "firebase/firestore";
 import { AesEncrypt } from "../../utils/AesEncrypt";
 import AccountUpdate from "./accountUpdate";
 import AccountAdd from "./accountAdd";
@@ -116,6 +116,42 @@ export default function PlatformDetail() {
             : name.length > 1 ? name.slice(0, 2).toUpperCase() : name.slice(0, 1).toUpperCase()
     }
 
+    const confirmDelete = (e) => {
+        try {
+            const batch = writeBatch(firestore);
+
+            const myPromise = new Promise((resolve, reject) => {
+                try {
+                    const queryDeleteAccounts = query(collection(firestore, "accounts"), where("platformId", "==", id));
+                    onSnapshot(queryDeleteAccounts, (querySnapshot) => {
+                        resolve(querySnapshot.forEach(async (acc) => batch.delete(doc(firestore, "accounts", acc.id))))
+                    })
+                } catch (error) {
+                    reject(error)
+                }
+            });
+
+            myPromise.then(async (res) => {
+                batch.delete(doc(firestore, "platforms", id))
+                await batch.commit()
+                    .then(async (res) => {
+                        setConfirmLoading(false);
+                        setOpen(false);
+                        fillToastMessage(['success', 'Submit success!']);
+                        navigate(-1);
+                    })
+            }).catch(err => { throw new Error(err) })
+        } catch (error) {
+            setConfirmLoading(false);
+            setOpen(false);
+            fillToastMessage(['error', 'Submit failed!']);
+        }
+        fillAccountUpdateModal(false);
+    };
+
+    const cancelDelete = (e) => {
+    };
+
     const onFinish = async (values) => {
         setConfirmLoading(true);
 
@@ -153,7 +189,7 @@ export default function PlatformDetail() {
             }}
         >
 
-            {accountAddModal && <AccountAdd platformId={id} />}
+            {accountAddModal && <AccountAdd platformId={id} categoryId={category.id} />}
             {accountUpdateModal && <AccountUpdate data={accountSelected} />}
 
             <Modal
@@ -164,20 +200,34 @@ export default function PlatformDetail() {
                 width={800}
                 footer={
                     <Form.Item>
-                        <Space size={'small'}>
-                            <Button
-                                type="primary"
-                                htmlType="submit"
-                                icon={<SaveOutlined />}
-                                loading={confirmLoading}
-                                onClick={() => form.submit()}
+                        <Row justify="space-between">
+                            <Popconfirm
+                                title="Confirm"
+                                description="Are you sure to delete this platform?"
+                                onConfirm={confirmDelete}
+                                onCancel={cancelDelete}
+                                okText="Yes"
+                                cancelText="No"
                             >
-                                Save
-                            </Button>
-                            <Button icon={<CloseOutlined />} onClick={handleCancel}>
-                                Cancel
-                            </Button>
-                        </Space>
+                                <Button danger icon={<DeleteOutlined />}>
+                                    Remove
+                                </Button>
+                            </Popconfirm>
+                            <Space size={'small'}>
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    icon={<SaveOutlined />}
+                                    loading={confirmLoading}
+                                    onClick={() => form.submit()}
+                                >
+                                    Save
+                                </Button>
+                                <Button icon={<CloseOutlined />} onClick={handleCancel}>
+                                    Cancel
+                                </Button>
+                            </Space>
+                        </Row>
                     </Form.Item>
                 }
             >

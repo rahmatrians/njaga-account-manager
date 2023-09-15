@@ -106,6 +106,7 @@ export default function PlatformAdd() {
                 batch.set(doc(firestore, "accounts", setAccountUID), {
                     id: setAccountUID,
                     platformId: setPlatformUID,
+                    categoryId: values.category,
                     label: val.label,
                     value: val.isLock ? AesEncrypt(val.value, "encrypt") : val.value,
                     isLock: val.isLock,

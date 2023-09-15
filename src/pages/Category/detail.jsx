@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Card, Col, Divider, FloatButton, Form, Input, Modal, Row, Space, Typography } from "antd";
-import { LeftOutlined, RightOutlined, EditOutlined, SaveOutlined, CloseOutlined, UserAddOutlined } from '@ant-design/icons';
+import { Avatar, Button, Card, Col, Divider, FloatButton, Form, Input, Modal, Popconfirm, Row, Space, Typography } from "antd";
+import { DeleteOutlined, LeftOutlined, RightOutlined, EditOutlined, SaveOutlined, CloseOutlined, UserAddOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { storeItem } from "../../utils/storeItem";
 
 import { firestore } from "../../config/firebase";
-import { getDoc, doc, collection, getDocs, updateDoc, query, where, onSnapshot } from "firebase/firestore";
+import { getDoc, doc, collection, getDocs, updateDoc, query, where, onSnapshot, deleteDoc, writeBatch, runTransaction } from "firebase/firestore";
 
 
 export default function CategoryDetail() {
@@ -73,6 +73,36 @@ export default function CategoryDetail() {
         setOpen(false);
     };
 
+    const confirmDelete = async (e) => {
+        // try {
+        //     const batch = writeBatch(firestore);
+
+        //     const queryDeleteAccounts = query(collection(firestore, "accounts"), where("categoryId", "==", category.id));
+        //     onSnapshot(queryDeleteAccounts, (querySnapshot) => {
+        //         Promise.all([
+        //             querySnapshot.forEach(async (acc) => {
+        //                 await batch.delete(doc(firestore, "accounts", acc.id))
+        //             })
+        //         ]).then(async () => {
+        //             await batch.commit()
+        //                 .then(async (res) => {
+        //                     setConfirmLoading(false);
+        //                     setOpen(false);
+        //                     fillToastMessage(['success', 'Submit success!']);
+        //                     navigate(-1);
+        //                 })
+        //         })
+        //     })
+        // } catch (error) {
+        //     setConfirmLoading(false);
+        //     setOpen(false);
+        //     fillToastMessage(['error', 'Submit failed!']);
+        // }
+    };
+
+    const cancelDelete = (e) => {
+    };
+
     const onFinish = async (values) => {
         setConfirmLoading(true);
 
@@ -117,19 +147,33 @@ export default function CategoryDetail() {
                 width={800}
                 footer={
                     <Form.Item>
-                        <Space size={'small'}>
-                            <Button
-                                type="primary"
-                                icon={<SaveOutlined />}
-                                loading={confirmLoading}
-                                onClick={() => form.submit()}
+                        <Row justify="space-between">
+                            <Popconfirm
+                                title="Confirm"
+                                description="Are you sure to delete this Category?"
+                                onConfirm={confirmDelete}
+                                onCancel={cancelDelete}
+                                okText="Yes"
+                                cancelText="No"
                             >
-                                Save
-                            </Button>
-                            <Button icon={<CloseOutlined />} onClick={handleCancel}>
-                                Cancel
-                            </Button>
-                        </Space>
+                                <Button danger icon={<DeleteOutlined />}>
+                                    Removex
+                                </Button>
+                            </Popconfirm>
+                            <Space size={'small'}>
+                                <Button
+                                    type="primary"
+                                    icon={<SaveOutlined />}
+                                    loading={confirmLoading}
+                                    onClick={() => form.submit()}
+                                >
+                                    Save
+                                </Button>
+                                <Button icon={<CloseOutlined />} onClick={handleCancel}>
+                                    Cancel
+                                </Button>
+                            </Space>
+                        </Row>
                     </Form.Item>
                 }
             >

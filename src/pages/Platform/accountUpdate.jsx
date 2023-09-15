@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { Avatar, Button, Card, Col, Divider, FloatButton, Form, Input, Modal, Row, Select, Space, Tag, Typography } from "antd";
-import { LeftOutlined, UnlockOutlined, FileOutlined, LockOutlined, EditOutlined, SaveOutlined, CloseOutlined, UserAddOutlined } from '@ant-design/icons';
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Button, Col, Divider, Form, Input, Modal, Popconfirm, Row, Space, Typography } from "antd";
+import { UnlockOutlined, LockOutlined, SaveOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 import { storeItem } from "../../utils/storeItem";
 
 import { firestore } from "../../config/firebase";
-import { getDoc, doc, collection, getDocs, updateDoc, query, where, onSnapshot } from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { AesEncrypt } from "../../utils/AesEncrypt";
 
 
@@ -41,6 +40,25 @@ export default function AccountUpdate({ data }) {
     const handleCancel = () => {
         setOpen(false);
         fillAccountUpdateModal(false);
+    };
+
+    const confirm = (e) => {
+        try {
+            // Delete a document in collection
+            deleteDoc(doc(firestore, "accounts", data.id)).then(async (res) => {
+                setConfirmLoading(false);
+                setOpen(false);
+                fillToastMessage(['success', 'Submit success!']);
+            })
+        } catch (error) {
+            setConfirmLoading(false);
+            setOpen(false);
+            fillToastMessage(['error', 'Submit failed!']);
+        }
+        fillAccountUpdateModal(false);
+    };
+
+    const cancel = (e) => {
     };
 
     const onFinish = async (values) => {
@@ -82,20 +100,34 @@ export default function AccountUpdate({ data }) {
             width={800}
             footer={
                 <Form.Item>
-                    <Space size={'small'}>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            icon={<SaveOutlined />}
-                            loading={confirmLoading}
-                            onClick={() => form.submit()}
+                    <Row justify="space-between">
+                        <Popconfirm
+                            title="Confirm"
+                            description="Are you sure to delete this account?"
+                            onConfirm={confirm}
+                            onCancel={cancel}
+                            okText="Yes"
+                            cancelText="No"
                         >
-                            Save
-                        </Button>
-                        <Button icon={<CloseOutlined />} onClick={handleCancel}>
-                            Cancel
-                        </Button>
-                    </Space>
+                            <Button danger icon={<DeleteOutlined />}>
+                                Remove
+                            </Button>
+                        </Popconfirm>
+                        <Space size={'small'}>
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                icon={<SaveOutlined />}
+                                loading={confirmLoading}
+                                onClick={() => form.submit()}
+                            >
+                                Save
+                            </Button>
+                            <Button icon={<CloseOutlined />} onClick={handleCancel}>
+                                Cancel
+                            </Button>
+                        </Space>
+                    </Row>
                 </Form.Item>
             }
         >
