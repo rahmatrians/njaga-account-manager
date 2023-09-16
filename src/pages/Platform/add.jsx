@@ -17,20 +17,22 @@ import { storeItem } from '../../utils/storeItem';
 import { nanoID } from "../../utils/nanoID";
 
 import { firestore } from "../../config/firebase";
-import { doc, collection, onSnapshot, query, writeBatch } from "firebase/firestore";
+import { doc, collection, onSnapshot, query, writeBatch, increment } from "firebase/firestore";
 import { AesEncrypt } from "../../utils/AesEncrypt";
+import CheckableTag from "antd/es/tag/CheckableTag";
+import { themeBank } from "../../utils/themeBank";
 
 
 
 export default function PlatformAdd() {
     const location = useLocation();
     const categoryId = location?.state?.categoryId;
+    const themes = themeBank();
     const fillToastMessage = storeItem((state) => state.fillToastMessage);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const [form] = Form.useForm();
 
-    // const [categoryId, setCategoryId] = useState(null);
     const [categories, setCategories] = useState([]);
 
     useEffect(() => {
@@ -86,6 +88,15 @@ export default function PlatformAdd() {
             : name.length > 1 ? name.slice(0, 2).toUpperCase() : name.slice(0, 1).toUpperCase()
     }
 
+    const [selectedTags, setSelectedTags] = useState(['Books']);
+    const handleThemeChange = (tag) => {
+        setSelectedTags(tag);
+
+        let field = form.getFieldsValue();
+        field.theme = tag;
+        form.setFieldsValue(field);
+    };
+
     const onFinish = async (values) => {
         setLoading(true);
 
@@ -98,7 +109,8 @@ export default function PlatformAdd() {
                 categoryId: values.category,
                 name: values.name,
                 aliasName: values.aliasName,
-                avatar: setAvatar(values.name)
+                avatar: setAvatar(values.name),
+                theme: values.theme,
             });
 
             values.accounts?.map(val => {
@@ -115,7 +127,7 @@ export default function PlatformAdd() {
             })
 
             batch.update(doc(firestore, "categories", values.category), {
-                total: 1 + (categories[categories.findIndex(x => x.value === values.category)].total),
+                total: increment(1),
             });
 
             await batch.commit()
@@ -226,6 +238,26 @@ export default function PlatformAdd() {
                     <Input placeholder="Type Alias Name here..." size="large" />
                 </Form.Item>
 
+                <Form.Item label="Theme" name="theme" messageVariables={{ another: 'good' }} rules={[
+                    {
+                        required: true,
+                        message: 'Please input Theme!',
+                    },
+                ]} hasFeedback>
+                    <Space size={[0, 8]} wrap>
+                        {themes.map((tag) => (
+                            <CheckableTag
+                                key={tag}
+                                checked={selectedTags.includes(tag)}
+                                onChange={(checked) => handleThemeChange(tag)}
+                                style={{ padding: 4 }}
+                            >
+                                <div style={{ background: tag, width: 20, height: 20, borderRadius: 3 }}></div>
+                            </CheckableTag>
+                        ))}
+                    </Space>
+                </Form.Item>
+
                 <Divider orientation="left" dashed plain style={{ color: 'lightGrey', marginTop: 50 }}>Account</Divider>
 
                 <Form.List name="accounts">
@@ -251,6 +283,9 @@ export default function PlatformAdd() {
                                                 },
                                             ]} hasFeedback>
                                                 <Input.Password
+                                                    style={
+                                                        lockedStatus(key) ? { marginLeft: '5%', width: '95%' } : { marginLeft: '4%', width: '95%' }
+                                                    }
                                                     visibilityToggle={{ visible: !lockedStatus(key) }}
                                                     iconRender={(visible) => (visible ? <UnlockOutlined /> : <LockOutlined />)}
                                                     placeholder={`Type Value ${key + 1} here...`} size="large" />

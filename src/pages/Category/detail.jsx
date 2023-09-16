@@ -6,6 +6,7 @@ import { storeItem } from "../../utils/storeItem";
 
 import { firestore } from "../../config/firebase";
 import { getDoc, doc, collection, getDocs, updateDoc, query, where, onSnapshot, deleteDoc, writeBatch, runTransaction } from "firebase/firestore";
+import { hexToRgb } from "../../utils/hexToRgb";
 
 
 export default function CategoryDetail() {
@@ -83,6 +84,7 @@ export default function CategoryDetail() {
                     setConfirmLoading(false);
                     setOpen(false);
                     fillToastMessage(['success', 'Submit success!']);
+                    navigate(-1);
                 })
             } else {
                 throw new Error("Cannot remove, please remove platforms first!");
@@ -93,8 +95,6 @@ export default function CategoryDetail() {
             setOpen(false);
             fillToastMessage(['error', error.message]);
         }
-
-        navigate(-1);
     };
 
     const cancelDelete = (e) => {
@@ -340,15 +340,15 @@ export default function CategoryDetail() {
                                             shape="square"
                                             size={52}
                                             style={{
-                                                backgroundColor: '#fde3cf',
-                                                color: '#f56a00',
+                                                backgroundColor: val.theme ? `rgba(${hexToRgb(val.theme)},0.3)` : '#fde3cf',
+                                                color: val.theme ? val.theme : '#f56a00',
                                                 marginRight: 20
                                             }}
                                         >
                                             {val.avatar}
                                         </Avatar>
                                         <div>
-                                            <Typography.Title level={4} style={{ color: '#f56a00', margin: 0, padding: 0 }}>{val.name}</Typography.Title>
+                                            <Typography.Title level={4} style={{ color: val.theme ? val.theme : '#f56a00', margin: 0, padding: 0 }}>{val.name}</Typography.Title>
                                             <p style={{ color: 'grey', margin: 0, padding: 0 }}>{val.aliasName.length > 20 ? val.aliasName.slice(0, 17) + '...' : val.aliasName}</p>
                                         </div>
                                     </Row>

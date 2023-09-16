@@ -5,10 +5,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { storeItem } from "../../utils/storeItem";
 
 import { firestore } from "../../config/firebase";
-import { doc, collection, updateDoc, query, where, onSnapshot, writeBatch } from "firebase/firestore";
+import { doc, collection, updateDoc, query, where, onSnapshot, writeBatch, increment } from "firebase/firestore";
 import { AesEncrypt } from "../../utils/AesEncrypt";
 import AccountUpdate from "./accountUpdate";
 import AccountAdd from "./accountAdd";
+import CheckableTag from "antd/es/tag/CheckableTag";
+import { themeBank } from "../../utils/themeBank";
+
 
 
 export default function PlatformDetail() {
@@ -16,6 +19,7 @@ export default function PlatformDetail() {
     let { id } = useParams();
     // const location = useLocation();
     // const categoryName = location?.state.categoryName;
+    const themes = themeBank();
     const { accountAddModal, accountUpdateModal } = storeItem();
     const fillToastMessage = storeItem((state) => state.fillToastMessage);
     const fillAccountAddModal = storeItem((state) => state.fillAccountAddModal);
@@ -24,6 +28,7 @@ export default function PlatformDetail() {
     const [platform, setPlatform] = useState({});
     const [accounts, setAccounts] = useState([]);
     const [accountSelected, setAccountSelected] = useState({});
+    const [selectedTags, setSelectedTags] = useState([]);
     const [category, setCategory] = useState({});
     const [categories, setCategories] = useState([]);
     const [form] = Form.useForm();
@@ -67,6 +72,7 @@ export default function PlatformDetail() {
             onSnapshot(q, (querySnapshot) => {
                 if (querySnapshot.exists()) {
                     setPlatform(querySnapshot.data());
+                    setSelectedTags(querySnapshot.data().theme);
 
                     const q2 = query(doc(firestore, "categories", querySnapshot.data().categoryId));
                     onSnapshot(q2, (qSnapshot2) => {
@@ -132,7 +138,12 @@ export default function PlatformDetail() {
             });
 
             myPromise.then(async (res) => {
-                batch.delete(doc(firestore, "platforms", id))
+                batch.delete(doc(firestore, "platforms", id));
+
+                batch.update(doc(firestore, "categories", category.id), {
+                    total: increment(-1),
+                });
+
                 await batch.commit()
                     .then(async (res) => {
                         setConfirmLoading(false);
@@ -152,6 +163,14 @@ export default function PlatformDetail() {
     const cancelDelete = (e) => {
     };
 
+    const handleThemeChange = (tag) => {
+        setSelectedTags(tag);
+
+        let field = form.getFieldsValue();
+        field.theme = tag;
+        form.setFieldsValue(field);
+    };
+
     const onFinish = async (values) => {
         setConfirmLoading(true);
 
@@ -162,6 +181,7 @@ export default function PlatformDetail() {
                 name: values.name,
                 aliasName: values.aliasName,
                 avatar: setAvatar(values.name),
+                theme: values.theme,
             }).then(async (res) => {
                 setConfirmLoading(false);
                 setOpen(false);
@@ -293,6 +313,25 @@ export default function PlatformDetail() {
                         <Input placeholder="Type Alias Name here..." size="large" />
                     </Form.Item>
 
+                    <Form.Item label="Theme" name="theme" messageVariables={{ another: 'good' }} rules={[
+                        {
+                            required: true,
+                            message: 'Please input Theme!',
+                        },
+                    ]} hasFeedback>
+                        <Space size={[0, 8]} wrap>
+                            {themes.map((tag) => (
+                                <CheckableTag
+                                    key={tag}
+                                    checked={selectedTags.includes(tag)}
+                                    onChange={(checked) => handleThemeChange(tag)}
+                                    style={{ padding: 4 }}
+                                >
+                                    <div style={{ background: tag, width: 20, height: 20, borderRadius: 3 }}></div>
+                                </CheckableTag>
+                            ))}
+                        </Space>
+                    </Form.Item>
                     <Divider orientation="left" dashed plain style={{ color: 'lightGrey' }}></Divider>
                 </Form>
             </Modal>
@@ -318,7 +357,7 @@ export default function PlatformDetail() {
                             // minWidth: 320,
                             borderRadius: 16,
                             marginBottom: 30,
-                            background: '#76BA99',
+                            background: platform.theme,
                             // backgroundImage: "linear-gradient(to right, #675bff, #cb83ff)"
                         }}
                         loading={loading}

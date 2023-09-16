@@ -85,14 +85,14 @@ export default function Platform() {
                                             size={52}
                                             style={{
                                                 backgroundColor: '#fde3cf',
-                                                color: '#f56a00',
+                                                color: val.theme ? val.theme : '#f56a00',
                                                 marginRight: 20
                                             }}
                                         >
                                             {val.avatar}
                                         </Avatar>
                                         <div>
-                                            <Title level={4} style={{ color: '#f56a00', margin: 0, padding: 0 }}>{val.name}</Title>
+                                            <Title level={4} style={{ color: val.theme ? val.theme : '#f56a00', margin: 0, padding: 0 }}>{val.name}</Title>
                                             <p style={{ color: 'grey', margin: 0, padding: 0 }}>{val.aliasName.length > 20 ? val.aliasName.slice(0, 17) + '...' : val.aliasName}</p>
                                         </div>
                                     </Row>
