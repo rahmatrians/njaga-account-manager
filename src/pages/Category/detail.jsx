@@ -74,30 +74,27 @@ export default function CategoryDetail() {
     };
 
     const confirmDelete = async (e) => {
-        // try {
-        //     const batch = writeBatch(firestore);
+        try {
+            // non-realtime query
+            const platformQuery = await getDocs(query(collection(firestore, "platforms"), where("categoryId", "==", id)));
 
-        //     const queryDeleteAccounts = query(collection(firestore, "accounts"), where("categoryId", "==", category.id));
-        //     onSnapshot(queryDeleteAccounts, (querySnapshot) => {
-        //         Promise.all([
-        //             querySnapshot.forEach(async (acc) => {
-        //                 await batch.delete(doc(firestore, "accounts", acc.id))
-        //             })
-        //         ]).then(async () => {
-        //             await batch.commit()
-        //                 .then(async (res) => {
-        //                     setConfirmLoading(false);
-        //                     setOpen(false);
-        //                     fillToastMessage(['success', 'Submit success!']);
-        //                     navigate(-1);
-        //                 })
-        //         })
-        //     })
-        // } catch (error) {
-        //     setConfirmLoading(false);
-        //     setOpen(false);
-        //     fillToastMessage(['error', 'Submit failed!']);
-        // }
+            if (platformQuery.empty) {
+                deleteDoc(doc(firestore, "categories", id)).then(async (res) => {
+                    setConfirmLoading(false);
+                    setOpen(false);
+                    fillToastMessage(['success', 'Submit success!']);
+                })
+            } else {
+                throw new Error("Cannot remove, please remove platforms first!");
+            }
+
+        } catch (error) {
+            setConfirmLoading(false);
+            setOpen(false);
+            fillToastMessage(['error', error.message]);
+        }
+
+        navigate(-1);
     };
 
     const cancelDelete = (e) => {
@@ -157,7 +154,7 @@ export default function CategoryDetail() {
                                 cancelText="No"
                             >
                                 <Button danger icon={<DeleteOutlined />}>
-                                    Removex
+                                    Remove
                                 </Button>
                             </Popconfirm>
                             <Space size={'small'}>
