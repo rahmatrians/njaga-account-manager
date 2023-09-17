@@ -1,14 +1,83 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { RightOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Col, Form, Input, Row } from 'antd';
 
 import { supabase } from '../../config/supabase';
 import { useNavigate } from 'react-router-dom';
 import { storeItem } from '../../utils/storeItem';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { collection, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { firestore } from '../../config/firebase';
+import { nanoID } from '../../utils/nanoID';
 
 const Login = () => {
     const navigate = useNavigate();
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+    const [loading, setLoading] = useState(false);
     const fillUserToken = storeItem((state) => state.fillUserToken);
+    const fillToastMessage = storeItem((state) => state.fillToastMessage);
+
+
+    const onSignGoogle = async (values) => {
+        setLoading(true);
+
+        signInWithPopup(auth, provider)
+            .then(async (result) => {
+                // This gives you a Google Access Token. You can use it to access the Google API.
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                const user = result.user;
+
+                console.log("result", result);
+                console.log("user", user);
+                console.log("token", token);
+
+                try {
+                    const usersData = await getDocs(query(collection(firestore, "users"), where("authId", "==", user.uid)));
+
+                    if (usersData.empty) {
+                        const setUID = nanoID();
+                        setDoc(doc(firestore, "users", setUID), {
+                            // add using auto-generated ID
+                            // const setCategory = await addDoc(collection(firestore, "categories"), {
+                            id: setUID,
+                            authId: user.uid,
+                            fullname: user.displayName,
+                            avatar: user.photoURL,
+                            lastLoginAt: user.metadata.lastLoginAt,
+                            createdAt: user.metadata.createdAt,
+                            providerId: result.providerId,
+                        })
+                    }
+
+                    setLoading(false);
+                    const accessToken = token;
+                    fillUserToken(accessToken);
+                    fillToastMessage(['success', 'Submit success!']);
+                    navigate("/dashboard");
+                } catch (err) {
+                    throw new Error(err);
+                }
+            }).catch((error) => {
+                setLoading(false);
+                // Handle Errors here.
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // The email of the user's account used.
+                // const email = error.customData.email;
+                // The AuthCredential type that was used.
+                const credential = GoogleAuthProvider.credentialFromError(error);
+
+                console.log("errorCode", errorCode);
+                console.log("errorMessage", errorMessage);
+                // console.log("email", email);
+                console.log("credential", credential);
+
+                fillToastMessage(['success', errorMessage]);
+            });
+
+    }
 
     const onSubmit = async (values) => {
         await supabase.auth.signInWithPassword({
@@ -17,7 +86,7 @@ const Login = () => {
         })
             .then(res => {
                 const accessToken = res.data.session.access_token;
-                storeItem.setState({ userToken: accessToken });
+                // storeItem.setState({ userToken: accessToken });
                 fillUserToken(accessToken);
                 navigate('/dashboard');
             })
@@ -65,6 +134,12 @@ const Login = () => {
                     <Form.Item style={{ marginTop: '15%' }}>
                         <Button type="primary" icon={<RightOutlined />} htmlType="submit" style={{ width: '100%' }}>
                             Log in
+                        </Button>
+                    </Form.Item>
+
+                    <Form.Item style={{ marginTop: '15%' }}>
+                        <Button onClick={() => onSignGoogle()} type="primary" icon={<RightOutlined />} style={{ width: '100%' }}>
+                            Google
                         </Button>
                     </Form.Item>
                 </Form>
