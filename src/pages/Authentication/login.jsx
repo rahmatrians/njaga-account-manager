@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RightOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Col, Form, Input, Row } from 'antd';
 
@@ -9,15 +9,45 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { collection, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { firestore } from '../../config/firebase';
 import { nanoID } from '../../utils/nanoID';
+import { UserAuth } from '../../context/AuthContext';
 
 const Login = () => {
+    const { googleSignIn, user } = UserAuth();
+
     const navigate = useNavigate();
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     const [loading, setLoading] = useState(false);
+    const [enable, setEnable] = useState(false);
     const fillUserToken = storeItem((state) => state.fillUserToken);
     const fillToastMessage = storeItem((state) => state.fillToastMessage);
 
+
+    useEffect(() => {
+        // authVerification();
+        // console.log('login user: ', user);
+        if (user) {
+            navigate("/dashboard");
+        }
+    }, [user]);
+
+    const authVerification = () => {
+        const isVerified = !user ? 1 : 0;
+        return isVerified;
+
+        //     // const { userToken } = storeItem();
+        //     // // console.log('user token : ', userToken);
+        //     // const isVerified = userToken ? 1 : 0;
+        //     // return isVerified;
+    }
+
+    const handleGoogleSignIn = async () => {
+        try {
+            googleSignIn();
+        } catch (error) {
+            console.log("failed to login", error);
+        }
+    };
 
     const onSignGoogle = async (values) => {
         setLoading(true);
@@ -92,7 +122,7 @@ const Login = () => {
             })
     };
 
-    return (
+    return authVerification() ? (
         <Row>
             <Col span={4} style={{
                 paddingTop: '20vh', margin: 'auto', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0,
@@ -138,7 +168,8 @@ const Login = () => {
                     </Form.Item>
 
                     <Form.Item style={{ marginTop: '15%' }}>
-                        <Button onClick={() => onSignGoogle()} type="primary" icon={<RightOutlined />} style={{ width: '100%' }}>
+                        {/* <Button onClick={() => onSignGoogle()} type="primary" icon={<RightOutlined />} style={{ width: '100%' }}> */}
+                        <Button onClick={() => handleGoogleSignIn()} type="primary" icon={<RightOutlined />} style={{ width: '100%' }}>
                             Google
                         </Button>
                     </Form.Item>
@@ -146,6 +177,6 @@ const Login = () => {
 
             </Col>
         </Row >
-    );
+    ) : navigate("/dashboard");
 };
 export default Login;

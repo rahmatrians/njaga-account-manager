@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Avatar, Button, Card, Col, Divider, FloatButton, Form, Input, Modal, Popconfirm, Row, Select, Space, Tag, Typography } from "antd";
-import { DeleteOutlined, LeftOutlined, UnlockOutlined, FileOutlined, LockOutlined, EditOutlined, SaveOutlined, CloseOutlined, UserAddOutlined } from '@ant-design/icons';
+import { DeleteOutlined, LeftOutlined, UnlockOutlined, CopyOutlined, LockOutlined, EditOutlined, SaveOutlined, CloseOutlined, UserAddOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from "react-router-dom";
 import { storeItem } from "../../utils/storeItem";
 
@@ -15,6 +15,7 @@ import { themeBank } from "../../utils/themeBank";
 
 
 export default function PlatformDetail() {
+    const { userId } = storeItem();
     const navigate = useNavigate();
     let { id } = useParams();
     // const location = useLocation();
@@ -209,7 +210,7 @@ export default function PlatformDetail() {
             }}
         >
 
-            {accountAddModal && <AccountAdd platformId={id} categoryId={category.id} />}
+            {accountAddModal && <AccountAdd platformId={id} categoryId={category.id} userId={userId} />}
             {accountUpdateModal && <AccountUpdate data={accountSelected} />}
 
             <Modal
@@ -432,7 +433,7 @@ export default function PlatformDetail() {
                                                 value={val.isLock ? "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" : val.value}
                                                 disabled={true}
                                                 visibilityToggle={{ visible: !val.isLock }}
-                                                iconRender={(visible) => (visible ? <Space><Button icon={<FileOutlined />} type="default" size="small" onClick={() => { navigator.clipboard.writeText(val.isLock ? AesEncrypt(val.value, "decrypt") : val.value) }}></Button><UnlockOutlined /></Space> : <Space><Button icon={<FileOutlined />} type="default" size="small" onClick={() => { navigator.clipboard.writeText(val.isLock ? AesEncrypt(val.value, "decrypt") : val.value) }}></Button><LockOutlined /></Space>)} />
+                                                iconRender={(visible) => (visible ? <Space><Button icon={<CopyOutlined />} type="default" size="small" onClick={() => { navigator.clipboard.writeText(val.isLock ? AesEncrypt(val.value, "decrypt") : val.value) }}></Button><UnlockOutlined /></Space> : <Space><Button icon={<CopyOutlined />} type="default" size="small" onClick={() => { navigator.clipboard.writeText(val.isLock ? AesEncrypt(val.value, "decrypt") : val.value) }}></Button><LockOutlined /></Space>)} />
                                             {/* /> */}
                                         </Row>
                                     </Card>

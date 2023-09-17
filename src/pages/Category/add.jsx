@@ -21,6 +21,7 @@ import { nanoID } from "../../utils/nanoID";
 
 
 export default function CategoryAdd() {
+    const { userId } = storeItem();
     const fillToastMessage = storeItem((state) => state.fillToastMessage);
     const [store, setStore] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -52,6 +53,7 @@ export default function CategoryAdd() {
                 description: values.description,
                 icon: values.icon,
                 total: 0,
+                userId: userId,
             }).then(async (res) => {
                 setLoading(false);
                 fillToastMessage(['success', 'Submit success!']);

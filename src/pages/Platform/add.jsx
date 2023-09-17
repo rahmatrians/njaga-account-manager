@@ -25,6 +25,7 @@ import { themeBank } from "../../utils/themeBank";
 
 
 export default function PlatformAdd() {
+    const { userId } = storeItem();
     const location = useLocation();
     const categoryId = location?.state?.categoryId;
     const themes = themeBank();
@@ -111,6 +112,7 @@ export default function PlatformAdd() {
                 aliasName: values.aliasName,
                 avatar: setAvatar(values.name),
                 theme: values.theme,
+                userId: userId,
             });
 
             values.accounts?.map(val => {
@@ -123,6 +125,7 @@ export default function PlatformAdd() {
                     value: val.isLock ? AesEncrypt(val.value, "encrypt") : val.value,
                     isLock: val.isLock,
                     valueStrength: 0,
+                    userId: userId,
                 });
             })
 

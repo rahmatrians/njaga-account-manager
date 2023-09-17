@@ -5,10 +5,12 @@ const { Title } = Typography;
 import { Link, useNavigate } from "react-router-dom";
 
 import { firestore } from "../../config/firebase";
-import { collection, getDocs, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { storeItem } from "../../utils/storeItem";
 
 
 export default function Category() {
+    const { userId } = storeItem();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState([]);
@@ -21,7 +23,7 @@ export default function Category() {
     const getCategories = async () => {
         setLoading(true);
         // realtime query
-        const q = query(collection(firestore, "categories"));
+        const q = query(collection(firestore, "categories"), where("userId", "==", userId));
         onSnapshot(q, (querySnapshot) => {
             let tempCategories = [];
             querySnapshot.forEach((doc) => {

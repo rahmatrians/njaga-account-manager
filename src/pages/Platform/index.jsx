@@ -11,6 +11,7 @@ import { collection, doc, getDocs, query, where, onSnapshot } from "firebase/fir
 
 
 export default function Platform() {
+    const { userId } = storeItem();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const fillMenuActive = storeItem((state) => state.fillMenuActive);
@@ -25,7 +26,7 @@ export default function Platform() {
     const getPlatforms = async () => {
         setLoading(true);
         // realtime query
-        const q = query(collection(firestore, "platforms"));
+        const q = query(collection(firestore, "platforms"), where("userId", "==", userId));
         onSnapshot(q, (querySnapshot) => {
             let tempPlatforms = [];
             querySnapshot.forEach((doc) => {

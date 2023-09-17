@@ -10,7 +10,7 @@ import { AesEncrypt } from "../../utils/AesEncrypt";
 import { nanoID } from "../../utils/nanoID";
 
 
-export default function AccountAdd({ platformId, categoryId }) {
+export default function AccountAdd({ platformId, categoryId, userId }) {
     const fillToastMessage = storeItem((state) => state.fillToastMessage);
     const fillAccountAddModal = storeItem((state) => state.fillAccountAddModal);
     const [form] = Form.useForm();
@@ -59,6 +59,7 @@ export default function AccountAdd({ platformId, categoryId }) {
                     value: val.isLock ? AesEncrypt(val.value, "encrypt") : val.value,
                     isLock: val.isLock,
                     valueStrength: 0,
+                    userId: userId,
                 });
             })
 

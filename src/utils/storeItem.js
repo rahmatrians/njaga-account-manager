@@ -11,23 +11,29 @@ export const storeItem = create(
             //     set((state) => ({ bears: state.bears + by })),
             // eatFish: () => set((state) => ({ fish: state.fish - 1 })),
             // removeAllBears: () => set({ bears: 0 }),
-            bears: 0,
+
             userId: null,
             fullname: null,
             email: null,
+            avatar: null,
+
             userToken: null,
             refreshToken: null,
+
             menuActive: '1',
             toastMessage: null,
             accountAddModal: false,
             accountUpdateModal: false,
 
-            increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
+            // increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
             fillUserId: (val) => set({ userId: val }),
             fillFullname: (val) => set({ fullname: val }),
             fillEmail: (val) => set({ email: val }),
+            fillAvatar: (val) => set({ avatar: val }),
+
             fillUserToken: (val) => set({ userToken: val }),
             fillRefreshToken: (val) => set({ refreshToken: val }),
+
             fillMenuActive: (val) => set({ menuActive: val }),
             fillToastMessage: (val) => set({ toastMessage: val }),
             fillAccountAddModal: (val) => set({ accountAddModal: val }),
@@ -35,10 +41,27 @@ export const storeItem = create(
 
             removeUserId: () => set({ userId: null }),
             removeFullname: () => set({ fullname: null }),
-            removeEmail: () => set({ emai: null }),
+            removeEmail: () => set({ email: null }),
+            removeAvatar: () => set({ avatar: null }),
+
             removeUserToken: () => set({ userToken: null }),
             removeRefreshToken: () => set({ refreshToken: null }),
             removeMenuActive: () => set({ menuActive: 1 }),
+
+            resetAll: () => set({
+                userId: null,
+                fullname: null,
+                email: null,
+                avatar: null,
+
+                userToken: null,
+                refreshToken: null,
+
+                menuActive: '1',
+                toastMessage: null,
+                accountAddModal: false,
+                accountUpdateModal: false,
+            }),
 
         }),
         {

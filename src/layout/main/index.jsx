@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import '../../App.css'
 
-import { Avatar, Badge, Button, ConfigProvider, Row, Space, theme, message } from 'antd';
-import { LockOutlined, AppstoreOutlined, SettingOutlined, PieChartOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Button, ConfigProvider, Row, Space, theme, message, Popover, Typography } from 'antd';
+import { BellOutlined, LogoutOutlined, LockOutlined, AppstoreOutlined, SettingOutlined, UserOutlined, PieChartOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu } from 'antd';
 import { Link } from 'react-router-dom';
 import { storeItem } from '../../utils/storeItem';
+import { UserAuth } from '../../context/AuthContext';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -17,28 +18,6 @@ function getItem(label, key, icon, children) {
         label,
     };
 }
-const items = [
-    {
-        label: (<Link to={"/dashboard"}>{"Dashboard"}</Link>),
-        key: '1',
-        icon: <PieChartOutlined />,
-    },
-    {
-        label: (<Link to={"/category"}>{"Category"}</Link>),
-        key: '2',
-        icon: <AppstoreOutlined />,
-    },
-    {
-        label: (<Link to={"/platform"}>{"Platform"}</Link>),
-        key: '3',
-        icon: <LockOutlined />,
-    },
-    {
-        label: (<Link to={"/setting"}>{"Setting"}</Link>),
-        key: "4",
-        icon: <SettingOutlined />,
-    },
-];
 
 // const breadcumbItems = [
 //     {
@@ -53,7 +32,7 @@ const items = [
 
 
 function Main({ children, breadcumb }) {
-    const { menuActive, toastMessage } = storeItem();
+    const { fullname, menuActive, avatar, toastMessage } = storeItem();
     const fillMenuActive = storeItem((state) => state.fillMenuActive);
     const fillToastMessage = storeItem((state) => state.fillToastMessage);
     const [messageApi, contextHolder] = message.useMessage();
@@ -66,11 +45,33 @@ function Main({ children, breadcumb }) {
     const breadcumbItems = breadcumb;
 
     const { token: { colorBgContainer } } = theme.useToken();
+    const { logOut } = UserAuth();
 
+    const items = [
+        {
+            label: (<Link to={"/dashboard"}>{"Dashboard"}</Link>),
+            key: '1',
+            icon: <PieChartOutlined />,
+        },
+        {
+            label: (<Link to={"/category"}>{"Category"}</Link>),
+            key: '2',
+            icon: <AppstoreOutlined />,
+        },
+        {
+            label: (<Link to={"/platform"}>{"Platform"}</Link>),
+            key: '3',
+            icon: <LockOutlined />,
+        },
+        {
+            label: (<Link to={"/setting"}>{"Setting"}</Link>),
+            key: "4",
+            icon: <SettingOutlined />,
+        },
+    ];
 
     useEffect(() => {
     }, [])
-
 
     const handleClick = () => {
         setIsDarkMode((previousValue) => !previousValue);
@@ -158,16 +159,32 @@ function Main({ children, breadcumb }) {
                                     </Space>
                                 </Row>
                                 <Row align="middle">
-                                    <Space size="middle">
-                                        <Badge count={9} size='small' offset={[-5, 5]}>
+                                    <Space align="center" size="middle">
+                                        {/* <Badge count={2} size='small' offset={[-5, 5]}>
                                             <Avatar shape="cirlce" size="default" />
                                         </Badge>
-                                        <Badge count={9} size='small' offset={[-5, 5]}>
-                                            <Avatar shape="cirlce" size="default" />
-                                        </Badge>
-                                        <Badge count={9} size='small' offset={[-5, 5]}>
-                                            <Avatar shape="cirlce" size="default" />
-                                        </Badge>
+                                        <Popover placement="bottomRight" title={"text"} content={"content"} trigger="click">
+                                            <Badge count={13} size='small' offset={[-5, 5]}>
+                                                <Button icon={<BellOutlined />}></Button>
+                                            </Badge>
+                                        </Popover> */}
+                                        <Popover
+                                            content={
+                                                <Space direction="vertical" style={{}}>
+                                                    <Button icon={<UserOutlined />} type='text' style={{ width: '100%', textAlign: 'left' }}>My Profile</Button>
+                                                    <Button onClick={() => logOut()} icon={<LogoutOutlined />} type='text' danger style={{ width: '100%', textAlign: 'left' }}>Logout</Button>
+                                                </Space>
+                                            }
+                                            placement="bottomRight" trigger="click">
+                                            <a>
+                                                <Row align="middle">
+                                                    <Space size="middle">
+                                                        <Typography.Title level={5} style={{ margin: 0, padding: 0 }}>{fullname}</Typography.Title>
+                                                        <Avatar src={avatar} shape="cirlce" size="large" />
+                                                    </Space>
+                                                </Row>
+                                            </a>
+                                        </Popover>
                                     </Space>
                                 </Row>
                             </Row>
@@ -208,7 +225,7 @@ function Main({ children, breadcumb }) {
                 </Layout>
 
             </ConfigProvider>
-        </div>
+        </div >
     )
 }
 
