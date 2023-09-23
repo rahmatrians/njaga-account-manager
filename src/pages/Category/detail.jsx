@@ -5,8 +5,9 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { storeItem } from "../../utils/storeItem";
 
 import { firestore } from "../../config/firebase";
-import { getDoc, doc, collection, getDocs, updateDoc, query, where, onSnapshot, deleteDoc, writeBatch, runTransaction } from "firebase/firestore";
+import { doc, collection, getDocs, updateDoc, query, where, onSnapshot, deleteDoc, orderBy } from "firebase/firestore";
 import { hexToRgb } from "../../utils/hexToRgb";
+import { currentDateTime } from "../../utils/currentDateTime";
 
 
 export default function CategoryDetail() {
@@ -53,7 +54,7 @@ export default function CategoryDetail() {
     const getPlatforms = async () => {
         setLoading(true);
         // realtime query
-        const q = query(collection(firestore, "platforms"), where("categoryId", "==", id));
+        const q = query(collection(firestore, "platforms"), orderBy("updatedAt", "desc"), where("categoryId", "==", id));
         onSnapshot(q, (querySnapshot) => {
             let tempPlatforms = [];
             querySnapshot.forEach((doc) => {
@@ -109,6 +110,7 @@ export default function CategoryDetail() {
                 title: values.title,
                 description: values.description,
                 icon: values.icon,
+                updatedAt: currentDateTime(),
             }).then(async (res) => {
                 setConfirmLoading(false);
                 setOpen(false);
@@ -279,7 +281,8 @@ export default function CategoryDetail() {
                     borderRadius: 16,
                     marginBottom: 30,
                     // background: '#181818',
-                    backgroundImage: "linear-gradient(to right, #675bff, #cb83ff)"
+                    backgroundImage: "linear-gradient(to right, #675bff,#cb83ff)",
+                    boxShadow: "0 14px 50px -16px #675bff,0 -7px 50px -16px #cb83ff"
                 }}
                 loading={loading}
             >
@@ -328,7 +331,7 @@ export default function CategoryDetail() {
                                     minWidth: 200,
                                     borderRadius: 16,
                                     marginBottom: 30,
-                                    background: '#181818'
+                                    background: '#0a0a0a'
                                 }}
                                 loading={loading}
                             >

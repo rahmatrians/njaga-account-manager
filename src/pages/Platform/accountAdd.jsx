@@ -8,6 +8,7 @@ import { firestore } from "../../config/firebase";
 import { getDoc, doc, collection, getDocs, updateDoc, query, where, onSnapshot, writeBatch } from "firebase/firestore";
 import { AesEncrypt } from "../../utils/AesEncrypt";
 import { nanoID } from "../../utils/nanoID";
+import { currentDateTime } from "../../utils/currentDateTime";
 
 
 export default function AccountAdd({ platformId, categoryId, userId }) {
@@ -60,6 +61,8 @@ export default function AccountAdd({ platformId, categoryId, userId }) {
                     isLock: val.isLock,
                     valueStrength: 0,
                     userId: userId,
+                    createdAt: currentDateTime(),
+                    updatedAt: currentDateTime(),
                 });
             })
 
@@ -163,7 +166,7 @@ export default function AccountAdd({ platformId, categoryId, userId }) {
                                             ]} hasFeedback>
                                                 <Input.Password
                                                     style={
-                                                        lockedStatus(key) ? { marginLeft: '5%', width: '95%' } : { marginLeft: '4%', width: '95%' }
+                                                        lockedStatus(key) ? { marginLeft: '5%', width: '94%' } : { marginLeft: '4%', width: '95%' }
                                                     }
                                                     visibilityToggle={{ visible: !lockedStatus(key) }}
                                                     iconRender={(visible) => (visible ? <UnlockOutlined /> : <LockOutlined />)}

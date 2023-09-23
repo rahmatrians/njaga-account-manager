@@ -130,7 +130,7 @@ const Login = () => {
                 <img src='../../public/icon.png' style={{ width: 45, display: 'block', marginLeft: 'auto', marginRight: 'auto', }} />
                 <h3 style={{ textAlign: 'center' }}>Login Form</h3>
 
-                <Form
+                {/* <Form
                     name="normal_login"
                     onFinish={onSubmit}
                 >
@@ -166,14 +166,14 @@ const Login = () => {
                             Log in
                         </Button>
                     </Form.Item>
+                </Form> */}
 
-                    <Form.Item style={{ marginTop: '15%' }}>
-                        {/* <Button onClick={() => onSignGoogle()} type="primary" icon={<RightOutlined />} style={{ width: '100%' }}> */}
-                        <Button onClick={() => handleGoogleSignIn()} type="primary" icon={<RightOutlined />} style={{ width: '100%' }}>
-                            Google
-                        </Button>
-                    </Form.Item>
-                </Form>
+                <Form.Item style={{ marginTop: '15%' }}>
+                    {/* <Button onClick={() => onSignGoogle()} type="primary" icon={<RightOutlined />} style={{ width: '100%' }}> */}
+                    <Button onClick={() => handleGoogleSignIn()} type="primary" icon={<RightOutlined />} style={{ width: '100%' }}>
+                        Google
+                    </Button>
+                </Form.Item>
 
             </Col>
         </Row >

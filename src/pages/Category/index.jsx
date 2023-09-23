@@ -5,7 +5,7 @@ const { Title } = Typography;
 import { Link, useNavigate } from "react-router-dom";
 
 import { firestore } from "../../config/firebase";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
 import { storeItem } from "../../utils/storeItem";
 
 
@@ -23,7 +23,7 @@ export default function Category() {
     const getCategories = async () => {
         setLoading(true);
         // realtime query
-        const q = query(collection(firestore, "categories"), where("userId", "==", userId));
+        const q = query(collection(firestore, "categories"), orderBy("updatedAt", "desc"), where("userId", "==", userId));
         onSnapshot(q, (querySnapshot) => {
             let tempCategories = [];
             querySnapshot.forEach((doc) => {
@@ -80,7 +80,7 @@ export default function Category() {
                                     minWidth: 320,
                                     borderRadius: 16,
                                     marginBottom: 30,
-                                    background: '#181818'
+                                    background: '#0a0a0a'
                                 }}
                                 loading={loading}
                             >

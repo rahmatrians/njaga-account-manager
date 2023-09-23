@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import '../../App.css'
 
-import { Avatar, Badge, Button, ConfigProvider, Row, Space, theme, message, Popover, Typography } from 'antd';
-import { BellOutlined, LogoutOutlined, LockOutlined, AppstoreOutlined, SettingOutlined, UserOutlined, PieChartOutlined } from '@ant-design/icons';
+import { Avatar, Button, ConfigProvider, Row, Space, theme, message, Popover, Typography, Badge } from 'antd';
+import { LeftOutlined, MenuFoldOutlined, MenuUnfoldOutlined, ExperimentOutlined, LogoutOutlined, LockOutlined, AppstoreOutlined, SettingOutlined, UserOutlined, PieChartOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu } from 'antd';
 import { Link } from 'react-router-dom';
 import { storeItem } from '../../utils/storeItem';
@@ -64,8 +64,13 @@ function Main({ children, breadcumb }) {
             icon: <LockOutlined />,
         },
         {
-            label: (<Link to={"/setting"}>{"Setting"}</Link>),
+            label: (<Link to={"/password-lab"}>{"Password Lab"}</Link>),
             key: "4",
+            icon: <Badge dot><ExperimentOutlined /></Badge>,
+        },
+        {
+            label: (<Link to={"/setting"}>{"Setting"}</Link>),
+            key: "5",
             icon: <SettingOutlined />,
         },
     ];
@@ -104,7 +109,14 @@ function Main({ children, breadcumb }) {
                         // colorBgContainer: isDarkMode ? darkAlgorithm : defaultAlgorithm,
                         colorPrimary: '#0057ff',
                     },
+                    components: {
+                        Menu: {
+                            itemSelectedBg: '#0057ff',
+                            itemSelectedColor: 'white'
+                        },
+                    }
                 }}
+
             >
 
                 <Layout
@@ -120,8 +132,9 @@ function Main({ children, breadcumb }) {
                     <Sider collapsed={collapsed} style={{ background: 'black', maxHeight: '100vh' }}>
                         <div className="demo-logo-vertical" />
                         <h1>nJaga</h1>
-                        <Menu onClick={selected => fillMenuActive(selected.key)} selectedKeys={menuActive} mode="inline" items={items} style={{ background: 'black', borderWidth: 1, borderColor: '#1f1f1f', minHeight: '100vh', paddingLeft: 10, paddingRight: 10 }} />
+                        <Menu onClick={selected => fillMenuActive(selected.key)} selectedKeys={menuActive} mode="inline" items={items} style={{ background: '#0a0a0a', borderWidth: 1, borderColor: '#1f1f1f', minHeight: '100vh', paddingLeft: 10, paddingRight: 10 }} />
                         {!collapsed && (
+
                             <Link to={'https://www.github.com/rahmatrians'} target="_blank" rel='noopener noreferrer'>
                                 <p style={{ position: 'absolute', left: 30, bottom: 20, color: 'grey', fontSize: 12 }}>Developed by <br /> Rahmat Riansyah</p>
                             </Link>
@@ -141,15 +154,18 @@ function Main({ children, breadcumb }) {
                             <Row align="middle" justify="space-between">
                                 <Row align="middle">
                                     <Space size="middle">
-                                        <Button onClick={() => handleClick()} type='primary'>
-                                            {isDarkMode ? "Y" : "X"}
-                                        </Button>
-                                        <Button onClick={() => (
-                                            // handleClick(),
-                                            setCollapsed(!collapsed)
-                                        )} type='primary'>
+                                        {/* <Button onClick={() => handleClick()} type='primary'>
                                             {isDarkMode ? "Light" : "Dark"}
-                                        </Button>
+                                        </Button> */}
+                                        <Button
+                                            onClick={() => (
+                                                // handleClick(),
+                                                setCollapsed(!collapsed)
+                                            )}
+                                            icon={collapsed ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
+                                            // type='primary'
+                                            style={{ padding: 5 }}
+                                        />
                                         <Breadcrumb
                                             style={{
                                                 margin: '16px 0',

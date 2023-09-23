@@ -5,12 +5,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { storeItem } from "../../utils/storeItem";
 
 import { firestore } from "../../config/firebase";
-import { doc, collection, updateDoc, query, where, onSnapshot, writeBatch, increment } from "firebase/firestore";
+import { doc, collection, query, where, onSnapshot, writeBatch, increment, orderBy } from "firebase/firestore";
 import { AesEncrypt } from "../../utils/AesEncrypt";
 import AccountUpdate from "./accountUpdate";
 import AccountAdd from "./accountAdd";
 import CheckableTag from "antd/es/tag/CheckableTag";
 import { themeBank } from "../../utils/themeBank";
+import { avatarText } from "../../utils/AvatarText";
+import { currentDateTime } from "../../utils/currentDateTime";
 
 
 
@@ -49,16 +51,17 @@ export default function PlatformDetail() {
     const getCategories = async () => {
         // setLoading(true);
         // realtime query
-        const q = query(collection(firestore, "categories"));
+        const q = query(collection(firestore, "categories"), where("userId", "==", userId));
         onSnapshot(q, (querySnapshot) => {
             let tempCategories = [];
             querySnapshot.forEach((doc) => {
                 tempCategories.push({ value: doc.id, label: doc.data().title, total: doc.data().total });
             });
-
             setCategories(tempCategories);
-            // setTimeout(() => setLoading(false), 500);
+
+            // setTimeout(() => setLoading(false), 300);
         });
+
     }
 
     const getPlatform = async () => {
@@ -94,10 +97,11 @@ export default function PlatformDetail() {
         setLoading(false);
     }
 
+
     const getAccounts = async () => {
         setLoading(true);
         // realtime query
-        const q = query(collection(firestore, "accounts"), where("platformId", "==", id));
+        const q = query(collection(firestore, "accounts"), orderBy("label", "asc"), where("platformId", "==", id));
         onSnapshot(q, (querySnapshot) => {
             let tempAccounts = [];
             querySnapshot.forEach((doc) => {
@@ -117,11 +121,6 @@ export default function PlatformDetail() {
         setOpen(false);
     };
 
-    const setAvatar = (name) => {
-        return name.split(" ").length > 1
-            ? (name.split(" ")[0][0] + name.split(" ")[1][0]).toUpperCase()
-            : name.length > 1 ? name.slice(0, 2).toUpperCase() : name.slice(0, 1).toUpperCase()
-    }
 
     const confirmDelete = (e) => {
         try {
@@ -176,18 +175,35 @@ export default function PlatformDetail() {
         setConfirmLoading(true);
 
         try {
-            // Update a document in collection
-            updateDoc(doc(firestore, "platforms", platform.id), {
+            const batch = writeBatch(firestore);
+
+            batch.update(doc(firestore, "platforms", platform.id), {
                 categoryId: values.category,
                 name: values.name,
                 aliasName: values.aliasName,
-                avatar: setAvatar(values.name),
+                avatar: avatarText(values.name),
                 theme: values.theme,
-            }).then(async (res) => {
-                setConfirmLoading(false);
-                setOpen(false);
-                fillToastMessage(['success', 'Submit success!']);
-            })
+                updatedAt: currentDateTime(),
+            });
+
+            if (values.category !== category.id) {
+                // new category
+                batch.update(doc(firestore, "categories", values.category), {
+                    total: increment(1),
+                });
+
+                // prev category
+                batch.update(doc(firestore, "categories", category.id), {
+                    total: increment(-1),
+                });
+            }
+
+            await batch.commit()
+                .then(() => {
+                    setConfirmLoading(false);
+                    setOpen(false);
+                    fillToastMessage(['success', 'Submit success!']);
+                })
         } catch (error) {
             setConfirmLoading(false);
             setOpen(false);
@@ -314,7 +330,7 @@ export default function PlatformDetail() {
                         <Input placeholder="Type Alias Name here..." size="large" />
                     </Form.Item>
 
-                    <Form.Item label="Theme" name="theme" messageVariables={{ another: 'good' }} rules={[
+                    <Form.Item initialValue={platform.theme} label="Theme" name="theme" messageVariables={{ another: 'good' }} rules={[
                         {
                             required: true,
                             message: 'Please input Theme!',
@@ -399,7 +415,7 @@ export default function PlatformDetail() {
                             minWidth: 320,
                             borderRadius: 16,
                             marginBottom: 30,
-                            background: '#181818',
+                            background: '#0a0a0a',
                             // backgroundImage: "linear-gradient(to right, #675bff, #cb83ff)"
                         }}
                         loading={loading}
@@ -416,7 +432,7 @@ export default function PlatformDetail() {
                                             minWidth: 200,
                                             borderRadius: 16,
                                             marginBottom: 30,
-                                            background: '#181818'
+                                            background: '#0a0a0a'
                                         }}
                                         loading={loading}
                                     >

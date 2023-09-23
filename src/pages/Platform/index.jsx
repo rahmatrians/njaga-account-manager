@@ -6,7 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { storeItem } from '../../utils/storeItem';
 
 import { firestore } from "../../config/firebase";
-import { collection, doc, getDocs, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
+import { hexToRgb } from "../../utils/hexToRgb";
 
 
 
@@ -14,7 +15,6 @@ export default function Platform() {
     const { userId } = storeItem();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const fillMenuActive = storeItem((state) => state.fillMenuActive);
 
     const [platforms, setPlatforms] = useState([]);
 
@@ -26,7 +26,7 @@ export default function Platform() {
     const getPlatforms = async () => {
         setLoading(true);
         // realtime query
-        const q = query(collection(firestore, "platforms"), where("userId", "==", userId));
+        const q = query(collection(firestore, "platforms"), orderBy("updatedAt", "desc"), where("userId", "==", userId));
         onSnapshot(q, (querySnapshot) => {
             let tempPlatforms = [];
             querySnapshot.forEach((doc) => {
@@ -73,7 +73,7 @@ export default function Platform() {
                                     minWidth: 200,
                                     borderRadius: 16,
                                     marginBottom: 30,
-                                    background: '#181818'
+                                    background: '#0a0a0a'
                                 }}
                                 loading={loading}
                             >
@@ -85,7 +85,7 @@ export default function Platform() {
                                             shape="square"
                                             size={52}
                                             style={{
-                                                backgroundColor: '#fde3cf',
+                                                backgroundColor: val.theme ? `rgba(${hexToRgb(val.theme)},0.3)` : '#fde3cf',
                                                 color: val.theme ? val.theme : '#f56a00',
                                                 marginRight: 20
                                             }}

@@ -10,6 +10,7 @@ export default function NotFound404() {
             alignItems: 'center',
             justifyContent: 'center',
             height: '100vh',
+            background: 'black',
         }}>
             {/* <img src="../../../public/404.svg" alt="not-found-404" style={{ width: '35%' }} /> */}
             <Result

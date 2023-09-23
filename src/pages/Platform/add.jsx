@@ -17,10 +17,12 @@ import { storeItem } from '../../utils/storeItem';
 import { nanoID } from "../../utils/nanoID";
 
 import { firestore } from "../../config/firebase";
-import { doc, collection, onSnapshot, query, writeBatch, increment } from "firebase/firestore";
+import { doc, collection, onSnapshot, query, writeBatch, increment, where } from "firebase/firestore";
 import { AesEncrypt } from "../../utils/AesEncrypt";
 import CheckableTag from "antd/es/tag/CheckableTag";
 import { themeBank } from "../../utils/themeBank";
+import { avatarText } from "../../utils/AvatarText";
+import { currentDateTime } from "../../utils/currentDateTime";
 
 
 
@@ -70,7 +72,7 @@ export default function PlatformAdd() {
     const getCategories = async () => {
         setLoading(true);
         // realtime query
-        const q = query(collection(firestore, "categories"));
+        const q = query(collection(firestore, "categories"), where("userId", "==", userId));
         onSnapshot(q, (querySnapshot) => {
             let tempCategories = [];
             querySnapshot.forEach((doc) => {
@@ -81,12 +83,6 @@ export default function PlatformAdd() {
             // setCategoryId(location?.state?.categoryId);
             setTimeout(() => setLoading(false), 500);
         });
-    }
-
-    const setAvatar = (name) => {
-        return name.split(" ").length > 1
-            ? (name.split(" ")[0][0] + name.split(" ")[1][0]).toUpperCase()
-            : name.length > 1 ? name.slice(0, 2).toUpperCase() : name.slice(0, 1).toUpperCase()
     }
 
     const [selectedTags, setSelectedTags] = useState(['Books']);
@@ -110,9 +106,11 @@ export default function PlatformAdd() {
                 categoryId: values.category,
                 name: values.name,
                 aliasName: values.aliasName,
-                avatar: setAvatar(values.name),
+                avatar: avatarText(values.name),
                 theme: values.theme,
                 userId: userId,
+                createdAt: currentDateTime(),
+                updatedAt: currentDateTime(),
             });
 
             values.accounts?.map(val => {
@@ -126,6 +124,8 @@ export default function PlatformAdd() {
                     isLock: val.isLock,
                     valueStrength: 0,
                     userId: userId,
+                    createdAt: currentDateTime(),
+                    updatedAt: currentDateTime(),
                 });
             })
 
@@ -158,7 +158,7 @@ export default function PlatformAdd() {
             style={{
                 padding: 24,
                 minHeight: '50vh',
-                background: '#181818',
+                background: '#0a0a0a',
                 borderRadius: 16
             }}>
 
@@ -287,7 +287,7 @@ export default function PlatformAdd() {
                                             ]} hasFeedback>
                                                 <Input.Password
                                                     style={
-                                                        lockedStatus(key) ? { marginLeft: '5%', width: '95%' } : { marginLeft: '4%', width: '95%' }
+                                                        lockedStatus(key) ? { marginLeft: '3%', width: '96%' } : { marginLeft: '2.5%', width: '96.5%' }
                                                     }
                                                     visibilityToggle={{ visible: !lockedStatus(key) }}
                                                     iconRender={(visible) => (visible ? <UnlockOutlined /> : <LockOutlined />)}

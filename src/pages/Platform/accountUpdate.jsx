@@ -6,6 +6,7 @@ import { storeItem } from "../../utils/storeItem";
 import { firestore } from "../../config/firebase";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { AesEncrypt } from "../../utils/AesEncrypt";
+import { currentDateTime } from "../../utils/currentDateTime";
 
 
 export default function AccountUpdate({ data }) {
@@ -70,6 +71,7 @@ export default function AccountUpdate({ data }) {
                 label: values.label,
                 value: isLock ? AesEncrypt(values.value, "encrypt") : values.value,
                 isLock: isLock,
+                updatedAt: currentDateTime(),
                 // valueStrength: 0,
             }).then(async (res) => {
                 setConfirmLoading(false);
@@ -177,7 +179,7 @@ export default function AccountUpdate({ data }) {
                         ]} hasFeedback>
                             <Input.Password
                                 style={
-                                    isLock ? { marginLeft: '5%', width: '95%' } : { marginLeft: '4%', width: '95%' }
+                                    isLock ? { marginLeft: '5%', width: '94%' } : { marginLeft: '4%', width: '94%' }
                                 }
                                 visibilityToggle={{ visible: !isLock }}
                                 iconRender={(visible) => (visible ? <UnlockOutlined /> : <LockOutlined />)}

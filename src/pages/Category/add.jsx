@@ -16,22 +16,19 @@ import { Content } from "antd/es/layout/layout";
 import { storeItem } from '../../utils/storeItem';
 
 import { firestore } from "../../config/firebase";
-import { doc, setDoc, addDoc, collection } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { nanoID } from "../../utils/nanoID";
+import { currentDateTime } from "../../utils/currentDateTime";
 
 
 export default function CategoryAdd() {
     const { userId } = storeItem();
     const fillToastMessage = storeItem((state) => state.fillToastMessage);
-    const [store, setStore] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
 
-    const [provinceItems, setProvinceItems] = useState(null);
-
-    const [loadings, setLoadings] = useState([]);
 
     useEffect(() => {
 
@@ -54,6 +51,8 @@ export default function CategoryAdd() {
                 icon: values.icon,
                 total: 0,
                 userId: userId,
+                createdAt: currentDateTime(),
+                updatedAt: currentDateTime(),
             }).then(async (res) => {
                 setLoading(false);
                 fillToastMessage(['success', 'Submit success!']);
@@ -77,7 +76,7 @@ export default function CategoryAdd() {
             style={{
                 padding: 24,
                 minHeight: '50vh',
-                background: '#181818',
+                background: '#0a0a0a',
                 borderRadius: 16
             }}>
             {contextHolder}
