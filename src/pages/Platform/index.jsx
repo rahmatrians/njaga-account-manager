@@ -34,7 +34,7 @@ export default function Platform() {
             });
 
             setPlatforms(tempPlatforms);
-            setTimeout(() => setLoading(false), 500);
+            setTimeout(() => setLoading(false), 0);
         });
     }
 

@@ -8,8 +8,9 @@ import {
 } from 'firebase/auth';
 import { auth, firestore } from '../config/firebase';
 import { storeItem } from '../utils/storeItem';
-import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { collection, doc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { nanoID } from '../utils/nanoID';
+import { currentDateTime } from '../utils/currentDateTime';
 
 const AuthContext = createContext();
 
@@ -19,6 +20,7 @@ export const AuthContextProvider = ({ children }) => {
     const fillFullname = storeItem((state) => state.fillFullname);
     const fillEmail = storeItem((state) => state.fillEmail);
     const fillAvatar = storeItem((state) => state.fillAvatar);
+    const fillLastLogin = storeItem((state) => state.fillLastLogin);
     const resetAll = storeItem((state) => state.resetAll);
     // const fillToastMessage = storeItem((state) => state.fillToastMessage);
     // const { userToken } = storeItem();
@@ -36,8 +38,11 @@ export const AuthContextProvider = ({ children }) => {
                 const usersData = await getDocs(query(collection(firestore, "users"), where("authId", "==", res.user.uid)));
 
                 let userID = null;
+                const currDateTime = currentDateTime();
+
                 if (usersData.empty) {
                     userID = nanoID();
+
                     setDoc(doc(firestore, "users", userID), {
                         // add using auto-generated ID
                         // const setCategory = await addDoc(collection(firestore, "categories"), {
@@ -45,16 +50,22 @@ export const AuthContextProvider = ({ children }) => {
                         authId: res.user.uid,
                         fullname: res.user.displayName,
                         avatar: res.user.photoURL,
-                        lastLoginAt: res.user.metadata.lastLoginAt,
+                        // lastLoginAt: res.user.metadata.lastLoginAt,
+                        lastLoginAt: currDateTime,
                         createdAt: res.user.metadata.createdAt,
                         providerId: res.providerId,
                     })
 
                 } else {
                     userID = usersData.docs[0].id;
+
+                    updateDoc(doc(firestore, "users", userID), {
+                        lastLoginAt: currDateTime,
+                    })
                 }
 
                 fillUserId(userID);
+                fillLastLogin(currentDateTime());
                 // fillToastMessage(['success', 'Submit success!']);
                 // navigate("/dashboard");
             } catch (err) {

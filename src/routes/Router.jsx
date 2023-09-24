@@ -20,6 +20,7 @@ import Login from "../pages/Authentication/login";
 
 import NotFound404 from "../pages/NotFound404";
 import PasswordLab from "../pages/PasswordLab";
+import MyProfile from "../pages/MyProfile";
 
 export const Router = createBrowserRouter([
     {
@@ -93,6 +94,13 @@ export const Router = createBrowserRouter([
         element: <PrivateRoute breadcumb={[
             { path: 'password-lab', title: 'Password Lab' },
         ]}><PasswordLab /></PrivateRoute>,
+        // errorElement: 
+    },
+    {
+        path: "my-profile",
+        element: <PrivateRoute breadcumb={[
+            { path: 'my-profile', title: 'My Profile' },
+        ]}><MyProfile /></PrivateRoute>,
         // errorElement: 
     },
     {

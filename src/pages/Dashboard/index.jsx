@@ -38,7 +38,7 @@ export default function Dashboard() {
             });
 
             setCategories(tempCategories);
-            setTimeout(() => setLoading(false), 500);
+            setTimeout(() => setLoading(false), 0);
         });
 
         // non-realtime query
@@ -64,7 +64,7 @@ export default function Dashboard() {
             });
 
             setPlatforms(tempPlatforms);
-            setTimeout(() => setLoading(false), 500);
+            setTimeout(() => setLoading(false), 0);
         });
     }
 
@@ -76,7 +76,7 @@ export default function Dashboard() {
         const snapshot = await getCountFromServer(q);
         setTotalPlatforms(snapshot.data().count);
 
-        setTimeout(() => setLoading(false), 300);
+        setTimeout(() => setLoading(false), 0);
     }
 
 
@@ -132,11 +132,11 @@ export default function Dashboard() {
                             loading={loading}
                         >
                             <Row justify='space-between' align='middle'>
-                                <Title level={1} style={{ fontWeight: 'bold', background: 'rgba(255,255,255,0.2)', padding: 16, borderRadius: 14 }}>89</Title>
+                                <Title level={1} style={{ fontWeight: 'bold', background: 'rgba(255,255,255,0.2)', padding: 16, borderRadius: 14 }}>∞</Title>
                                 {/* <Button type="text" shape="circle" icon={<RightOutlined />} style={{ color: 'lightGrey' }} size={32} /> */}
                             </Row>
 
-                            <Title level={3} style={{ margin: 0, padding: 0 }}>Password Strength (not yet)</Title>
+                            <Title level={3} style={{ margin: 0, padding: 0 }}>Password Strength (soon)</Title>
                             {/* <Row justify='space-between' align='middle' style={{ marginTop: 10 }}>
                             </Row> */}
                         </Card>
@@ -156,7 +156,7 @@ export default function Dashboard() {
                             loading={loading}
                         >
                             <Row justify='space-between' align='middle'>
-                                <Title level={1} style={{ fontWeight: 'bold', background: 'rgba(255,255,255,0.2)', padding: 16, borderRadius: 14 }}>89</Title>
+                                <Title level={1} style={{ fontWeight: 'bold', background: 'rgba(255,255,255,0.2)', padding: 16, borderRadius: 14 }}>∞</Title>
                                 {/* <Button type="text" shape="circle" icon={<RightOutlined />} style={{ color: 'lightGrey' }} size={32} /> */}
                             </Row>
 

@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import '../../App.css'
+
+import Lottie from 'react-lottie';
+import animationData from '../../../public/thunder loader.json'
 
 import { Avatar, Button, ConfigProvider, Row, Space, theme, message, Popover, Typography, Badge } from 'antd';
 import { LeftOutlined, MenuFoldOutlined, MenuUnfoldOutlined, ExperimentOutlined, LogoutOutlined, LockOutlined, AppstoreOutlined, SettingOutlined, UserOutlined, PieChartOutlined } from '@ant-design/icons';
@@ -18,6 +21,15 @@ function getItem(label, key, icon, children) {
         label,
     };
 }
+
+const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+        preserveAspectRatio: "xMidYMid slice"
+    },
+};
 
 // const breadcumbItems = [
 //     {
@@ -39,6 +51,7 @@ function Main({ children, breadcumb }) {
 
     const { defaultAlgorithm, darkAlgorithm } = theme;
     const [isDarkMode, setIsDarkMode] = useState(true);
+    const [loadingAnimate, setLoadingAnimate] = useState(true);
 
     const [collapsed, setCollapsed] = useState(false);
 
@@ -69,14 +82,29 @@ function Main({ children, breadcumb }) {
             icon: <Badge dot><ExperimentOutlined /></Badge>,
         },
         {
-            label: (<Link to={"/setting"}>{"Setting"}</Link>),
+            label: (<Link to={"/my-profile"}>{"My Profile"}</Link>),
             key: "5",
+            icon: <UserOutlined />,
+        },
+        {
+            label: (<Link to={"/setting"}>{"Setting"}</Link>),
+            key: "6",
             icon: <SettingOutlined />,
         },
     ];
-
     useEffect(() => {
+        setTimeout(() => setLoadingAnimate(false), 3000);
     }, [])
+
+    const firstLoadAnimation = () => {
+        return <div style={{ position: 'absolute', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100vh', background: 'black' }}>
+            <Lottie
+                options={defaultOptions}
+                width={80}
+                height={80}
+            />
+        </div>
+    };
 
     const handleClick = () => {
         setIsDarkMode((previousValue) => !previousValue);
@@ -96,9 +124,13 @@ function Main({ children, breadcumb }) {
 
 
     return (
-        <div style={{
+        <div div style={{
             height: '100vh', width: '100%', background: 'orange', position: 'fixed',
-        }}>
+        }
+        }>
+
+            {loadingAnimate && firstLoadAnimation()}
+
             <ConfigProvider
                 theme={{
                     // algorithm: darkAlgorithm,
@@ -118,6 +150,7 @@ function Main({ children, breadcumb }) {
                 }}
 
             >
+
 
                 <Layout
                     style={{
@@ -187,7 +220,7 @@ function Main({ children, breadcumb }) {
                                         <Popover
                                             content={
                                                 <Space direction="vertical" style={{}}>
-                                                    <Button icon={<UserOutlined />} type='text' style={{ width: '100%', textAlign: 'left' }}>My Profile</Button>
+                                                    <Link to={'/my-profile'}><Button icon={<UserOutlined />} type='text' style={{ width: '100%', textAlign: 'left' }}>My Profile</Button></Link>
                                                     <Button onClick={() => logOut()} icon={<LogoutOutlined />} type='text' danger style={{ width: '100%', textAlign: 'left' }}>Logout</Button>
                                                 </Space>
                                             }
@@ -241,8 +274,7 @@ function Main({ children, breadcumb }) {
                 </Layout>
 
             </ConfigProvider>
-        </div >
-    )
+        </div>)
 }
 
 export default Main

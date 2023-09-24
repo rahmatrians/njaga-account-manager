@@ -16,6 +16,7 @@ export const storeItem = create(
             fullname: null,
             email: null,
             avatar: null,
+            lastLogin: null,
 
             userToken: null,
             refreshToken: null,
@@ -30,6 +31,7 @@ export const storeItem = create(
             fillFullname: (val) => set({ fullname: val }),
             fillEmail: (val) => set({ email: val }),
             fillAvatar: (val) => set({ avatar: val }),
+            fillLastLogin: (val) => set({ lastLogin: val }),
 
             fillUserToken: (val) => set({ userToken: val }),
             fillRefreshToken: (val) => set({ refreshToken: val }),
@@ -43,6 +45,7 @@ export const storeItem = create(
             removeFullname: () => set({ fullname: null }),
             removeEmail: () => set({ email: null }),
             removeAvatar: () => set({ avatar: null }),
+            removeLastLogin: () => set({ lastLogin: null }),
 
             removeUserToken: () => set({ userToken: null }),
             removeRefreshToken: () => set({ refreshToken: null }),
@@ -53,6 +56,7 @@ export const storeItem = create(
                 fullname: null,
                 email: null,
                 avatar: null,
+                lastLogin: null,
 
                 userToken: null,
                 refreshToken: null,

@@ -28,7 +28,7 @@ export default function Partners() {
 
     const confirm = () =>
         new Promise((resolve) => {
-            setTimeout(() => resolve(null), 3000);
+            setTimeout(() => resolve(null), 0);
         });
 
     //table

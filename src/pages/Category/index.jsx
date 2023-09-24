@@ -31,7 +31,7 @@ export default function Category() {
             });
 
             setCategories(tempCategories);
-            setTimeout(() => setLoading(false), 500);
+            setTimeout(() => setLoading(false), 0);
         });
 
         // non-realtime query

@@ -81,7 +81,7 @@ export default function PlatformAdd() {
 
             setCategories(tempCategories);
             // setCategoryId(location?.state?.categoryId);
-            setTimeout(() => setLoading(false), 500);
+            setTimeout(() => setLoading(false), 0);
         });
     }
 

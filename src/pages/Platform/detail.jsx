@@ -59,7 +59,7 @@ export default function PlatformDetail() {
             });
             setCategories(tempCategories);
 
-            // setTimeout(() => setLoading(false), 300);
+            // setTimeout(() => setLoading(false), 0);
         });
 
     }
@@ -108,7 +108,7 @@ export default function PlatformDetail() {
                 tempAccounts.push({ id: doc.id, ...doc.data() });
             });
             setAccounts(tempAccounts);
-            setTimeout(() => setLoading(false), 500);
+            setTimeout(() => setLoading(false), 0);
         });
     }
 
